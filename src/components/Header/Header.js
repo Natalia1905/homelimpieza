@@ -11,7 +11,6 @@ import {
   InputGroupText,
   InputGroup,
   Input,
-  UncontrolledAlert,
   Dropdown,
   Collapse,
   DropdownToggle,
@@ -150,18 +149,7 @@ class Header extends React.Component {
             </NavLink>
         </div>
         <div className={`d-print-none ${s.root}`}>
-          <UncontrolledAlert
-            className={`${s.alert} mr-3 d-lg-down-none animate__animated animate__bounceIn animate__delay-1s`}
-          >
-            Check out Light Blue{" "}
-            <button
-              className="btn-link"
-              onClick={() => this.setState({ settingsOpen: true })}
-            >
-              <SettingsIcon className={s.settingsIcon} />
-            </button>{" "}
-            on the right!
-          </UncontrolledAlert>
+         
           <Collapse
             className={`${s.searchCollapse} ml-lg-0 mr-md-3`}
             isOpen={this.state.searchOpen}
@@ -185,22 +173,7 @@ class Header extends React.Component {
               />
             </InputGroup>
           </Collapse>
-          <Form className="d-md-down-none mr-3 ml-3" inline>
-            <FormGroup>
-              <InputGroup className={`input-group-no-border ${s.searchForm}`}>
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText className={s.inputGroupText}>
-                    <SearchIcon className={s.headerIcon} />
-                  </InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  id="search-input"
-                  className="input-transparent"
-                  placeholder="Search Dashboard"
-                />
-              </InputGroup>
-            </FormGroup>
-          </Form>
+         
 
           <Nav className="ml-md-0">
             <Dropdown
@@ -216,7 +189,7 @@ class Header extends React.Component {
                 >
                   <img src={avatar} alt="..." />
                 </span>
-                <span className={`small d-sm-down-none ${s.accountCheck}`}>Philip smith</span>
+                <span className={`small d-sm-down-none ${s.accountCheck}`}>Natalia Martínez</span>
                 <Badge className={`d-sm-down-none ${s.badge}`} color="danger">
                   9
                 </Badge>

@@ -1,4 +1,4 @@
-import Widget from '../../components/Widget';
+import Widget from '../../components/Widget/Widget';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Table } from 'reactstrap';

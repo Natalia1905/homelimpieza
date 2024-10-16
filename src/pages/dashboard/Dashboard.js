@@ -321,7 +321,7 @@ class Dashboard extends React.Component {
                       <i className="status status-bottom bg-success" />
                     </span>
                     <div>
-                      <h6 className="m-0">Jamey Brownlow</h6>
+                      <h6 className="m-0">Natalia</h6>
                       <p className="help-block text-ellipsis m-0">
                         Good news coming tonight. Seems they agreed to proceed
                       </p>

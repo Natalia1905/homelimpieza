@@ -1,215 +1,317 @@
-import React from "react";
-import { Row, Col, Button } from "reactstrap";
+import Widget from '../../components/Widget';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Table } from 'reactstrap';
 
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import uuid from "uuid/v4";
-import Widget from "../../components/Widget";
-import s from "./Notifications.module.scss";
+const API_URL = 'https://api-iv1i.onrender.com/inventario';
+const PRODUCTOS_URL = 'https://api-iv1i.onrender.com/producto';
 
-class Notifications extends React.Component {
-  state = {
-    options: {
-      position: "top-right",
-      autoClose: 5000,
-      closeOnClick: false,
-      pauseOnHover: false,
-      draggable: true,
-    },
+const Inventario = () => {
+  const [inventarios, setInventarios] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [editingInventario, setEditingInventario] = useState(null);
+  const [formData, setFormData] = useState({
+    cantidad: '',
+    producto_id: '',
+    inventario_id: '',
+    status: 'A',
+    usuario_mod: '',
+  });
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    fetchInventarios();
+    fetchProducts();
+  }, []);
+
+  const fetchInventarios = async () => {
+    try {
+      const response = await axios.get(API_URL);
+      setInventarios(response.data);
+    } catch (error) {
+      console.error('Error fetching inventarios:', error);
+      setErrorMessage('Error al cargar los inventarios. Inténtalo de nuevo más tarde.');
+    }
   };
 
-  componentDidMount() {
-    toast.success("Thanks for checking out Messenger!", {
-      position: "bottom-right",
-      autoClose: 5000,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(PRODUCTOS_URL);
+      // Filtramos los productos activos
+      const activeProducts = response.data.filter(product => product.status === 'A');
+      setProducts(activeProducts);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setErrorMessage('Error al cargar los productos. Inténtalo de nuevo más tarde.');
+    }
+  };
+
+  useEffect(() => {
+    if (editingInventario) {
+      setFormData({
+        ...editingInventario,
+        usuario_mod: '', // Limpiar el campo usuario_mod al editar
+      });
+    } else {
+      resetForm();
+    }
+  }, [editingInventario]);
+
+  const resetForm = () => {
+    setFormData({
+      cantidad: '',
+      producto_id: '',
+      inventario_id: '',
+      status: 'A',
+      usuario_mod: '',
     });
-  }
-
-  addSuccessNotification = () =>
-    toast.success(
-      "Showing success message was successful!",
-      this.state.options
-    );
-
-  toggleLocation = (location) => {
-    this.setState((prevState) => ({
-      options: {
-        ...prevState.options,
-        position: location,
-      },
-    }));
   };
 
-  addInfoNotification = () => {
-    let id = uuid();
-    toast(
-      <div>
-        Launching thermonuclear war...
-        <Button
-          onClick={() => this.launchNotification(id)}
-          outline
-          size="xs"
-          className="width-100 mb-xs mr-xs mt-1"
-        >
-          Cancel launch
-        </Button>
-      </div>,
-      { 
-        ...this.state.options,
-        className: "Toastify__toast--primary",
-        toastId: id
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+    try {
+      const { cantidad, producto_id } = formData;
+      const existingInventario = inventarios.find(inv => inv.producto_id === producto_id);
+
+      if (existingInventario) {
+        // Si el inventario ya existe, actualizamos la cantidad
+        const newCantidad = parseInt(existingInventario.cantidad) + parseInt(cantidad);
+        await axios.put(`${API_URL}/${existingInventario.inventario_id}`, {
+          ...existingInventario,
+          cantidad: newCantidad,
+          usuario_mod: formData.usuario_mod || '',
+        });
+        setSuccessMessage('Cantidad actualizada exitosamente!');
+      } else {
+        // Si no existe, creamos un nuevo inventario
+        await axios.post(API_URL, formData);
+        setSuccessMessage('Inventario guardado exitosamente!');
+      }
+
+      fetchInventarios();
+      setEditingInventario(null);
+      resetForm();
+    } catch (error) {
+      setErrorMessage('Error guardando el inventario. Inténtalo de nuevo.');
+      console.error('Error details:', error.response ? error.response.data : error.message);
+    }
+  };
+
+  const handleEdit = (inventario) => {
+    setEditingInventario(inventario);
+  };
+
+  const groupInventarios = () => {
+    const grouped = {};
+    inventarios.forEach((inv) => {
+      if (grouped[inv.producto_id]) {
+        grouped[inv.producto_id].cantidad += inv.cantidad;
+      } else {
+        grouped[inv.producto_id] = { ...inv };
+      }
+    });
+    return Object.values(grouped);
+  };
+
+  const groupedInventarios = groupInventarios();
+
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage('');
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
+
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage('');
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
+
+  return (
+    <div>
+      <h2 style={{
+        textAlign: 'center',
+        fontWeight: 'bold',
+        letterSpacing: '0.1em',
+        margin: '20px 0'
+      }}>
+        GESTIÓN DE INVENTARIO
+      </h2>
+
+      <form onSubmit={handleSubmit} className="widget-body">
+        <legend><strong>Formulario de Inventario</strong></legend>
+        <Table>
+          <tbody>
+            <tr>
+              <td><label htmlFor="cantidad">Cantidad</label></td>
+              <td>
+                <input
+                  id="cantidad"
+                  name="cantidad"
+                  value={formData.cantidad}
+                  onChange={handleChange}
+                  placeholder="Cantidad del producto"
+                  type="number"
+                  className="form-control"
+                  required
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><label htmlFor="producto_id">Producto</label></td>
+              <td>
+                <select
+                  id="producto_id"
+                  name="producto_id"
+                  value={formData.producto_id}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                >
+                  <option value="" disabled>Selecciona un producto</option>
+                  {products.map((product) => (
+                    <option key={product.producto_id} value={product.producto_id}>
+                      {product.nombre}
+                    </option>
+                  ))}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td><label htmlFor="status">Estado</label></td>
+              <td>
+                <select
+                  id="status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                >
+                  <option value="A">Activo</option>
+                  <option value="I">Inactivo</option>
+                </select>
+              </td>
+            </tr>
+            {editingInventario && (
+              <tr>
+                <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
+                <td>
+                  <input
+                    id="usuario_mod"
+                    name="usuario_mod"
+                    value={formData.usuario_mod}
+                    onChange={handleChange}
+                    placeholder="Nombre del usuario"
+                    type="text"
+                    className="form-control"
+                    required
+                  />
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+        <div className="form-action bg-transparent ps-0 row mb-3">
+          <div className="col-md-12">
+            <button type="submit" className="me-4 btn btn-primary">
+              {editingInventario ? 'Actualizar' : 'Agregar'}
+            </button>
+            {editingInventario && (
+              <button type="button" className="btn btn-default" onClick={() => setEditingInventario(null)}>
+                Cancelar
+              </button>
+            )}
+          </div>
+        </div>
+
+        {successMessage && (
+          <div
+            className="alert alert-success fade show"
+            role="alert"
+            style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000 }}
+          >
+            {successMessage}
+          </div>
+        )}
+        {errorMessage && (
+          <div
+            className="alert alert-danger fade show"
+            role="alert"
+            style={{ position: 'absolute', top: '70px', right: '20px', zIndex: 1000 }}
+          >
+            {errorMessage}
+          </div>
+        )}
+      </form>
+
+      <Widget
+        title={
+          <h5>
+            Inventario <span className="fw-semi-bold">Gestión</span>
+          </h5>
         }
-    );
-  };
+        settings
+        close
+      >
+        <Table className="table-bordered table-lg mt-lg mb-0">
+          <thead className="text-uppercase">
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Status</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {groupedInventarios.map((inventario) => {
+              const producto = products.find(product => product.producto_id === inventario.producto_id);
+              return (
+                <tr key={inventario.producto_id}>
+                  <td>{producto ? producto.nombre : 'No disponible'}</td>
+                  <td>{inventario.cantidad}</td>
+                  <td style={{ display: 'flex', justifyContent: 'center' }}>
+                    {inventario.status === 'A' ? (
+                      <span className="px-2 btn btn-success btn-xs" style={{ flex: 1 }}>
+                        Activo
+                      </span>
+                    ) : (
+                      <span className="px-2 btn btn-danger btn-xs" style={{ flex: 1 }}>
+                        Inactivo
+                      </span>
+                    )}
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-xs w-100"
+                      onClick={() => handleEdit(inventario)}
+                    >
+                      <span className="d-none d-md-inline-block">Editar</span>
+                      <span className="d-md-none"><i className="la la-edit"></i></span>
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      </Widget>
+    </div>
+  );
+};
 
-  launchNotification = (id) =>
-    toast.update(id, {
-      ...this.state.options,
-      render: "Thermonuclear war averted",
-      type: toast.TYPE.SUCCESS,
-    });
-
-  addErrorNotification = () => {
-    let id = uuid();
-    toast.error(
-      <div>
-        Error destroying alien planet <br />
-        <Button
-          onClick={() => this.retryNotification(id)}
-          outline
-          size="xs"
-          className="width-100 mb-xs mr-xs mt-1"
-        >
-          Retry
-        </Button>
-      </div>,
-      { ...this.state.options, toastId: id }
-    );
-  };
-
-  retryNotification = (id) =>
-    toast.update(id, {
-      ...this.state.options,
-      render: "Alien planet destroyed!",
-      type: toast.TYPE.SUCCESS,
-    });
-
-  render() {
-    return (
-      <div className={s.root}>
-        <h1 className="page-title">
-          Messages - <span className="fw-semi-bold">Notifications</span>
-        </h1>
-
-        <Widget title={<h6> Messenger </h6>} close collapse settings>
-          <Row>
-            <Col lg="4" xs="12">
-              <h5 className="m-t-1">Layout options</h5>
-              <p>
-                There are few position options available for notifications. You
-                can click any of them to change notifications position:
-              </p>
-              <div className="location-selector">
-                <div
-                  className="bit top left"
-                  onClick={() => {
-                    this.toggleLocation("top-left");
-                  }}
-                />
-                <div
-                  className="bit top right"
-                  onClick={() => {
-                    this.toggleLocation("top-right");
-                  }}
-                />
-                <div
-                  className="bit top"
-                  onClick={() => {
-                    this.toggleLocation("top-center");
-                  }}
-                />
-                <div
-                  className="bit bottom left"
-                  onClick={() => {
-                    this.toggleLocation("bottom-left");
-                  }}
-                />
-                <div
-                  className="bit bottom right"
-                  onClick={() => {
-                    this.toggleLocation("bottom-right");
-                  }}
-                />
-                <div
-                  className="bit bottom"
-                  onClick={() => {
-                    this.toggleLocation("bottom-center");
-                  }}
-                />
-              </div>
-            </Col>
-
-            <Col lg="4" xs="12">
-              <h5 className="mt-0 mt-md-2 mt-lg-0">Notification Types</h5>
-              <p>
-                Different types of notifications for lost of use cases. Custom
-                classes are also supported.
-              </p>
-              <p className="mb-3">
-                <Button
-                  color="primary"
-                  id="show-info-message"
-                  onClick={this.addInfoNotification}
-                >
-                  Info Message
-                </Button>
-              </p>
-              <p className="mb-3">
-                <Button
-                  color="danger"
-                  id="show-error-message"
-                  onClick={this.addErrorNotification}
-                >
-                  Error + Retry Message
-                </Button>
-              </p>
-              <p>
-                <Button
-                  color="success"
-                  id="show-success-message"
-                  onClick={this.addSuccessNotification}
-                >
-                  Success Message
-                </Button>
-              </p>
-            </Col>
-
-            <Col lg="4" xs="12">
-              <h5 className="m-t-1">Dead Simple Usage</h5>
-              <p>
-                Just few lines of code to instantiate a notifications object.
-                Does not require passing any options:
-              </p>
-              <pre className={s.notificationsCode}>
-                <code>{'toast("Thanks for checking out Messenger!");'}</code>
-              </pre>
-              <p>More complex example:</p>
-              <pre className={s.notificationsCode}>
-                <code>
-                  {
-                    "\ntoast.success( 'There was an explosion while processing your request.', { \n position: location,\n autoClose: 5000, \n hideProgressBar: false, \n closeOnClick: true,\n pauseOnHover: true, \n draggable: true \n});\n\n"
-                  }
-                </code>
-              </pre>
-            </Col>
-          </Row>
-        </Widget>
-      </div>
-    );
-  }
-}
-
-export default Notifications;
+export default Inventario;

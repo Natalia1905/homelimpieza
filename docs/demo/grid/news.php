@@ -33,7 +33,7 @@
         <div class="news-item-info">
             <h5 class="name no-margin mb-xs"><a href="#">Light Blue Template reached $300</a></h5>
             <p class="fs-mini">
-                Light Blue Inc. shares just hit $300 price. "This was inevitable. It should
+                 Inc. shares just hit $300 price. "This was inevitable. It should
                 have happen sooner or later" - says NYSE expert.
             </p>
             <time class="help-block">Sep 25, 11:59</time>
@@ -50,6 +50,6 @@
                 incididunt ut labore et dolore magna aliqua.
             </p>
             <time class="help-block">Mar 20, 18:46</time>
-        </div>
+        </div>Light Blue
     </li>
 </ul>
