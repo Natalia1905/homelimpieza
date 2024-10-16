@@ -13,6 +13,13 @@ import HomeIcon from '../Icons/SidebarIcons/HomeIcon';
 import TypographyIcon from '../Icons/SidebarIcons/TypographyIcon';
 import TablesIcon from '../Icons/SidebarIcons/TablesIcon';
 import NotificationsIcon from '../Icons/SidebarIcons/NotificationsIcon';
+import CompraIcon from '../Icons/SidebarIcons/CompraIcon';
+import PromocionIcon from '../Icons/SidebarIcons/PromocionIcon';
+import PromoProductoIcon from '../Icons/SidebarIcons/PromoProductoIcon';
+import ProveedorIcon from '../Icons/SidebarIcons/ProveedorIcon';
+import FacturaIcon from '../Icons/SidebarIcons/FacturaIcon';
+import FacturaDetalleIcon from '../Icons/SidebarIcons/FacturaDetalleIcon';
+
 
 
 class Sidebar extends React.Component {
@@ -121,54 +128,54 @@ class Sidebar extends React.Component {
                         activeItem={this.props.activeItem}
                         header="Compra Producto"
                         isHeader
-                        iconName={<NotificationsIcon className={s.menuIcon}/>}
+                        iconName={<CompraIcon className={s.menuIcon}/>}
                         link="/app/compra"
-                        index="ui"
+                        index="compra"
                     />
                      <LinksGroup
                         onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
                         activeItem={this.props.activeItem}
                         header="Promocion"
                         isHeader
-                        iconName={<NotificationsIcon className={s.menuIcon}/>}
+                        iconName={<PromocionIcon className={s.menuIcon}/>}
                         link="/app/promocion"
-                        index="ui"
+                        index="promocion"
                     />
                      <LinksGroup
                         onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
                         activeItem={this.props.activeItem}
                         header="Promocion Producto"
                         isHeader
-                        iconName={<NotificationsIcon className={s.menuIcon}/>}
+                        iconName={<PromoProductoIcon className={s.menuIcon}/>}
                         link="/app/promoproducto"
-                        index="ui"
+                        index="promoproducto"
                     />
                      <LinksGroup
                         onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
                         activeItem={this.props.activeItem}
                         header="Proveedor"
                         isHeader
-                        iconName={<NotificationsIcon className={s.menuIcon}/>}
+                        iconName={<ProveedorIcon className={s.menuIcon}/>}
                         link="/app/proveedor"
-                        index="ui"
+                        index="proveedor"
                     />
                      <LinksGroup
                         onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
                         activeItem={this.props.activeItem}
                         header="Factura"
                         isHeader
-                        iconName={<NotificationsIcon className={s.menuIcon}/>}
+                        iconName={<FacturaIcon className={s.menuIcon}/>}
                         link="/app/factura"
-                        index="ui"
+                        index="factura"
                     />
                      <LinksGroup
                         onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
                         activeItem={this.props.activeItem}
                         header="Factura a Detalle"
                         isHeader
-                        iconName={<NotificationsIcon className={s.menuIcon}/>}
+                        iconName={<FacturaDetalleIcon className={s.menuIcon}/>}
                         link="/app/facturadetalle"
-                        index="ui"
+                        index="facturadetalle"
                     />
                 </ul>
               
