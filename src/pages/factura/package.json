@@ -1,6 +1,6 @@
 {
-  "name": "compra",
+  "name": "factura",
   "version": "1.0.0",
-  "main": "compra.js",
+  "main": "factura.js",
   "license": "MIT"
 }

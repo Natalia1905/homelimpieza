@@ -1,74 +1,96 @@
-import Widget from '../../components/Widget/Widget';
+import Widget from '../../components/Widget';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Table } from 'reactstrap';
 
-const API_URL = 'https://api-iv1i.onrender.com/producto';
-const CATEGORIAS_URL = 'https://api-iv1i.onrender.com/categoria';
+const API_URL = 'https://api-iv1i.onrender.com/compra_producto';
+const PROVEEDORES_URL = 'https://api-iv1i.onrender.com/proveedor';
+const PRODUCTOS_URL = 'https://api-iv1i.onrender.com/producto';
 
-const Typography = () => {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [editingProduct, setEditingProduct] = useState(null);
+const CompraProducto = () => {
+  const [compras, setCompras] = useState([]);
+  const [filteredCompras, setFilteredCompras] = useState([]);
+  const [proveedores, setProveedores] = useState([]);
+  const [productos, setProductos] = useState([]);
+  const [editingCompra, setEditingCompra] = useState(null);
   const [formData, setFormData] = useState({
-    nombre: '',
-    descripcion: '',
-    precio: '',
-    categoria_id: '',
+    proveedor_id: '',
     producto_id: '',
+    fecha: '',
+    monto: '',
+    descripcion: '',
+    compra_producto_id: '',
     status: 'A',
     usuario_mod: '',
   });
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState('');
 
   useEffect(() => {
-    fetchProducts();
-    fetchCategories();
+    fetchCompras();
+    fetchProveedores();
+    fetchProductos();
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchCompras = async () => {
     try {
       const response = await axios.get(API_URL);
-      setProducts(response.data);
+      setCompras(response.data);
+      setFilteredCompras(response.data); // Inicialmente, muestra todas las compras
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Error fetching compras:', error);
+      setErrorMessage('Error al cargar las compras. Inténtalo de nuevo más tarde.');
+    }
+  };
+
+  const fetchProveedores = async () => {
+    try {
+      const response = await axios.get(PROVEEDORES_URL);
+      const activos = response.data.filter(proveedor => proveedor.status === 'A');
+      setProveedores(activos);
+    } catch (error) {
+      console.error('Error fetching proveedores:', error);
+      setErrorMessage('Error al cargar los proveedores. Inténtalo de nuevo más tarde.');
+    }
+  };
+
+  const fetchProductos = async () => {
+    try {
+      const response = await axios.get(PRODUCTOS_URL);
+      const activos = response.data.filter(producto => producto.status === 'A');
+      setProductos(activos);
+    } catch (error) {
+      console.error('Error fetching productos:', error);
       setErrorMessage('Error al cargar los productos. Inténtalo de nuevo más tarde.');
     }
   };
 
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get(CATEGORIAS_URL);
-      // Filtramos solo las categorías activas
-      const activeCategories = response.data.filter(category => category.status === 'A');
-      console.log('Categorías activas obtenidas:', activeCategories);
-      setCategories(activeCategories);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      setErrorMessage('Error al cargar las categorías. Inténtalo de nuevo más tarde.');
-    }
-  };
-
   useEffect(() => {
-    if (editingProduct) {
+    if (editingCompra) {
       setFormData({
-        ...editingProduct,
-        producto_id: editingProduct.producto_id,
+        proveedor_id: editingCompra.proveedor_id,
+        producto_id: editingCompra.producto_id,
+        fecha: new Date(editingCompra.fecha).toISOString().split('T')[0], // Formato YYYY-MM-DD
+        monto: editingCompra.monto,
+        descripcion: editingCompra.descripcion,
+        compra_producto_id: editingCompra.compra_producto_id,
+        status: editingCompra.status,
         usuario_mod: '',
       });
     } else {
       resetForm();
     }
-  }, [editingProduct]);
+  }, [editingCompra]);
 
   const resetForm = () => {
     setFormData({
-      nombre: '',
-      descripcion: '',
-      precio: '',
-      categoria_id: '',
+      proveedor_id: '',
       producto_id: '',
+      fecha: '',
+      monto: '',
+      descripcion: '',
+      compra_producto_id: '',
       status: 'A',
       usuario_mod: '',
     });
@@ -83,36 +105,40 @@ const Typography = () => {
     e.preventDefault();
     setErrorMessage('');
     try {
-      if (editingProduct) {
-        await axios.put(`${API_URL}/${formData.producto_id}`, formData);
-        setSuccessMessage('Producto actualizado exitosamente!');
+      if (editingCompra) {
+        await axios.put(`${API_URL}/${formData.compra_producto_id}`, formData);
+        setSuccessMessage('Compra actualizada exitosamente!');
       } else {
         await axios.post(API_URL, formData);
-        setSuccessMessage('Producto guardado exitosamente!');
+        setSuccessMessage('Compra guardada exitosamente!');
       }
-      fetchProducts();
-      setEditingProduct(null);
+      fetchCompras();
+      setEditingCompra(null);
       resetForm();
     } catch (error) {
-      setErrorMessage('Error guardando el producto. Inténtalo de nuevo.');
+      setErrorMessage('Error guardando la compra. Inténtalo de nuevo.');
       console.error('Error details:', error.response ? error.response.data : error.message);
     }
   };
 
-  const handleStatusChange = async (id, currentStatus) => {
-    const newStatus = currentStatus === 'A' ? 'I' : 'A';
-    try {
-      await axios.patch(`${API_URL}/${id}`, { status: newStatus });
-      fetchProducts();
-      setSuccessMessage('Estado actualizado exitosamente!');
-    } catch (error) {
-      console.error('Error updating status:', error);
-      setErrorMessage('Error al actualizar el estado. Inténtalo de nuevo.');
-    }
+  const handleEdit = (compra) => {
+    setEditingCompra(compra);
   };
 
-  const handleEdit = (product) => {
-    setEditingProduct(product);
+  const handleMonthChange = (e) => {
+    setSelectedMonth(e.target.value);
+  };
+
+  const filterByMonth = () => {
+    if (selectedMonth) {
+      const filtered = compras.filter(compra => {
+        const compraDate = new Date(compra.fecha);
+        return compraDate.getMonth() + 1 === parseInt(selectedMonth); // +1 porque getMonth() es 0-indexado
+      });
+      setFilteredCompras(filtered);
+    } else {
+      setFilteredCompras(compras);
+    }
   };
 
   useEffect(() => {
@@ -141,23 +167,77 @@ const Typography = () => {
         letterSpacing: '0.1em',
         margin: '20px 0'
       }}>
-        GESTIÓN DE PRODUCTOS
+        GESTIÓN DE COMPRAS
       </h2>
 
       <form onSubmit={handleSubmit} className="widget-body">
-        <legend><strong>Formulario de Producto</strong></legend>
+        <legend><strong>Formulario de Compra</strong></legend>
         <Table>
           <tbody>
             <tr>
-              <td><label htmlFor="nombre">Nombre</label></td>
+              <td><label htmlFor="proveedor_id">Proveedor</label></td>
+              <td>
+                <select
+                  id="proveedor_id"
+                  name="proveedor_id"
+                  value={formData.proveedor_id}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                >
+                  <option value="" disabled>Selecciona un proveedor</option>
+                  {proveedores.map((proveedor) => (
+                    <option key={proveedor.proveedor_id} value={proveedor.proveedor_id}>
+                      {proveedor.nombre_proveedor}
+                    </option>
+                  ))}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td><label htmlFor="producto_id">Producto</label></td>
+              <td>
+                <select
+                  id="producto_id"
+                  name="producto_id"
+                  value={formData.producto_id}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                >
+                  <option value="" disabled>Selecciona un producto</option>
+                  {productos.map((producto) => (
+                    <option key={producto.producto_id} value={producto.producto_id}>
+                      {producto.nombre}
+                    </option>
+                  ))}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td><label htmlFor="fecha">Fecha</label></td>
               <td>
                 <input
-                  id="nombre"
-                  name="nombre"
-                  value={formData.nombre}
+                  id="fecha"
+                  name="fecha"
+                  value={formData.fecha}
                   onChange={handleChange}
-                  placeholder="Nombre del producto"
-                  type="text"
+                  type="date"
+                  className="form-control"
+                  required
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><label htmlFor="monto">Monto ($)</label></td>
+              <td>
+                <input
+                  id="monto"
+                  name="monto"
+                  value={formData.monto}
+                  onChange={handleChange}
+                  placeholder="Monto de la compra"
+                  type="number"
                   className="form-control"
                   required
                 />
@@ -171,50 +251,11 @@ const Typography = () => {
                   name="descripcion"
                   value={formData.descripcion}
                   onChange={handleChange}
-                  placeholder="Descripción del producto"
+                  placeholder="Descripción de la compra"
                   type="text"
                   className="form-control"
                   required
                 />
-              </td>
-            </tr>
-            <tr>
-              <td><label htmlFor="precio">Precio ($)</label></td>
-              <td>
-                <div className="input-group">
-                  <span className="input-group-text">$</span>
-                  <input
-                    id="precio"
-                    name="precio"
-                    value={formData.precio}
-                    onChange={handleChange}
-                    placeholder="Precio del producto"
-                    type="number"
-                    className="form-control-16 form-control"
-                    required
-                  />
-                  <span className="input-group-text">.00</span>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td><label htmlFor="categoria_id">Categoría</label></td>
-              <td>
-                <select
-                  id="categoria_id"
-                  name="categoria_id"
-                  value={formData.categoria_id}
-                  onChange={handleChange}
-                  className="form-control"
-                  required
-                >
-                  <option value="" disabled>Selecciona una categoría</option>
-                  {categories.map((category) => (
-                    <option key={category.categoria_id} value={category.categoria_id}>
-                      {category.nombre_categoria}
-                    </option>
-                  ))}
-                </select>
               </td>
             </tr>
             <tr>
@@ -233,7 +274,7 @@ const Typography = () => {
                 </select>
               </td>
             </tr>
-            {editingProduct && (
+            {editingCompra && (
               <tr>
                 <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
                 <td>
@@ -255,10 +296,10 @@ const Typography = () => {
         <div className="form-action bg-transparent ps-0 row mb-3">
           <div className="col-md-12">
             <button type="submit" className="me-4 btn btn-primary">
-              {editingProduct ? 'Actualizar' : 'Agregar'}
+              {editingCompra ? 'Actualizar' : 'Agregar'}
             </button>
-            {editingProduct && (
-              <button type="button" className="btn btn-default" onClick={() => setEditingProduct(null)}>
+            {editingCompra && (
+              <button type="button" className="btn btn-default" onClick={() => setEditingCompra(null)}>
                 Cancelar
               </button>
             )}
@@ -285,10 +326,21 @@ const Typography = () => {
         )}
       </form>
 
+      <div style={{ margin: '20px 0' }}>
+        <label htmlFor="month">Filtrar por mes:</label>
+        <select id="month" value={selectedMonth} onChange={handleMonthChange} className="form-control" style={{ width: '200px', display: 'inline-block', marginLeft: '10px' }}>
+          <option value="">Selecciona un mes</option>
+          {Array.from({ length: 12 }, (_, index) => (
+            <option key={index} value={index + 1}>{new Date(0, index).toLocaleString('default', { month: 'long' })}</option>
+          ))}
+        </select>
+        <button onClick={filterByMonth} className="btn btn-primary" style={{ marginLeft: '10px' }}>Filtrar</button>
+      </div>
+
       <Widget
         title={
           <h5>
-            Productos <span className="fw-semi-bold">Limpieza</span>
+            Compras <span className="fw-semi-bold">Realizadas</span>
           </h5>
         }
         settings
@@ -297,42 +349,49 @@ const Typography = () => {
         <Table className="table-bordered table-lg mt-lg mb-0">
           <thead className="text-uppercase">
             <tr>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Precio</th>
+              <th>Proveedor</th>
+              <th>Producto</th>
+              <th>Fecha</th>
+              <th>Monto</th>
               <th>Status</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product.producto_id}>
-                <td>{product.nombre}</td>
-                <td>{product.descripcion}</td>
-                <td>${product.precio}</td>
-                <td style={{ display: 'flex', justifyContent: 'center' }}>
-                  {product.status === 'A' ? (
-                    <span className="px-2 btn btn-success btn-xs" style={{ flex: 1 }}>
-                      Activo
-                    </span>
-                  ) : (
-                    <span className="px-2 btn btn-danger btn-xs" style={{ flex: 1 }}>
-                      Inactivo
-                    </span>
-                  )}
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-xs w-100"
-                    onClick={() => handleEdit(product)}
-                  >
-                    <span className="d-none d-md-inline-block">Editar</span>
-                    <span className="d-md-none"><i className="la la-edit"></i></span>
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {filteredCompras.map((compra) => {
+              const proveedor = proveedores.find(p => p.proveedor_id === compra.proveedor_id);
+              const producto = productos.find(p => p.producto_id === compra.producto_id);
+
+              return (
+                <tr key={compra.compra_producto_id}>
+                  <td>{proveedor ? proveedor.nombre_proveedor : 'Proveedor no encontrado'}</td>
+                  <td>{producto ? producto.nombre : 'Producto no encontrado'}</td>
+                  <td>{new Date(compra.fecha).toLocaleDateString()}</td>
+                  <td>${compra.monto}</td>
+                  <td style={{ display: 'flex', justifyContent: 'center' }}>
+                    {compra.status === 'A' ? (
+                      <span className="px-2 btn btn-success btn-xs" style={{ flex: 1 }}>
+                        Activo
+                      </span>
+                    ) : (
+                      <span className="px-2 btn btn-danger btn-xs" style={{ flex: 1 }}>
+                        Inactivo
+                      </span>
+                    )}
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-xs w-100"
+                      onClick={() => handleEdit(compra)}
+                    >
+                      <span className="d-none d-md-inline-block">Editar</span>
+                      <span className="d-md-none"><i className="la la-edit"></i></span>
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </Table>
       </Widget>
@@ -340,4 +399,4 @@ const Typography = () => {
   );
 };
 
-export default Typography;
+export default CompraProducto;

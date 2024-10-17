@@ -174,8 +174,8 @@ class Sidebar extends React.Component {
                         header="Factura a Detalle"
                         isHeader
                         iconName={<FacturaDetalleIcon className={s.menuIcon}/>}
-                        link="/app/facturadetalle"
-                        index="facturadetalle"
+                        link="/app/factura_detalle"
+                        index="factura_detalle"
                     />
                 </ul>
               

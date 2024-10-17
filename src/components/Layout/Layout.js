@@ -12,6 +12,12 @@ import MapsGoogle from '../../pages/components/maps/google';
 import CoreTypography from '../../pages/typography';
 import Charts from '../../pages/components/charts/Charts';
 import Dashboard from '../../pages/dashboard';
+import Compra from '../../pages/compra/compra'; // Importa el componente Compra
+import Promocion from '../../pages/promocion/promocion'; 
+import Promoproducto from '../../pages/promoproducto/promoproducto'; 
+import Proveedor from '../../pages/proveedor/proveedor'; 
+import Factura from '../../pages/factura/factura'; 
+import Factura_detalle from '../../pages/factura_detalle/factura_detalle'; 
 
 import Header from '../Header';
 import Sidebar from '../Sidebar';
@@ -30,12 +36,11 @@ class Layout extends React.Component {
     sidebarStatic: false,
     sidebarOpened: false,
   };
+
   constructor(props) {
     super(props);
-
     this.handleSwipe = this.handleSwipe.bind(this);
   }
-
 
   handleSwipe(e) {
     if ('ontouchstart' in window) {
@@ -64,8 +69,6 @@ class Layout extends React.Component {
       >
         <div className={s.wrap}>
           <Header />
-          {/* <Chat chatOpen={this.state.chatOpen} /> */}
-          {/* <Helper /> */}
           <Sidebar />
           <Hammer onSwipe={this.handleSwipe}>
             <main className={s.content}>
@@ -85,11 +88,17 @@ class Layout extends React.Component {
                     <Route path="/app/tables" exact component={TablesStatic} />
                     <Route path="/app/components/maps" exact component={MapsGoogle} />
                     <Route path="/app/typography" exact component={CoreTypography} />
+                    <Route path="/app/compra" exact component={Compra} /> {/* Añade la ruta para Compra */}
+                    <Route path="/app/promocion" exact component={Promocion} /> {/* Añade la ruta */}
+                    <Route path="/app/promoproducto" exact component={Promoproducto}/> {/* Añade la ruta  */}
+                    <Route path="/app/proveedor" exact component={Proveedor}/> {/* Añade la ruta  */}
+                    <Route path="/app/factura" exact component={Factura}/> {/* Añade la ruta  */}
+                    <Route path="/app/factura_detalle" exact component={Factura_detalle}/> {/* Añade la ruta  */}
                   </Switch>
                 </CSSTransition>
               </TransitionGroup>
               <footer className={s.contentFooter}>
-               
+                {/* Aquí puedes añadir contenido del pie de página si lo deseas */}
               </footer>
             </main>
           </Hammer>
