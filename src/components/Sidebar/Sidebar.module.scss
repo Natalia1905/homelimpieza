@@ -223,3 +223,27 @@
 .menuIcon {
   fill: $icon-color;
 }
+
+.roleSelect {
+  appearance: none; /* Elimina el estilo predeterminado del navegador */
+  background-color: #fff; /* Color de fondo */
+  border: 1px solid #ccc; /* Borde */
+  border-radius: 4px; /* Esquinas redondeadas */
+  padding: 10px 15px; /* Espaciado interno */
+  font-size: 16px; /* Tamaño de fuente */
+  color: #333; /* Color de texto */
+  cursor: pointer; /* Cursor de puntero al pasar el ratón */
+  margin-bottom: 20px; /* Espaciado inferior */
+  width: 100%; /* Ancho completo */
+  
+  &:focus {
+      border-color: #007bff; /* Color de borde al enfocar */
+      outline: none; /* Elimina el contorno predeterminado */
+  }
+
+  /* Agrega un ícono de flecha personalizado si es necesario */
+  background-image: url('/path/to/your/arrow-icon.svg'); /* Ruta a tu ícono */
+  background-repeat: no-repeat;
+  background-position: right 10px center; /* Ajusta la posición del ícono */
+  background-size: 12px; /* Tamaño del ícono */
+}

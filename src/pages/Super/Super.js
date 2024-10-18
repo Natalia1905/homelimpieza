@@ -3,23 +3,15 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Table } from 'reactstrap';
 
-const API_URL = 'https://api-iv1i.onrender.com/factura_detalle';
-const PRODUCTO_URL = 'https://api-iv1i.onrender.com/producto';
-const FACTURA_URL = 'https://api-iv1i.onrender.com/facturacion';
-const CATEGORIA_URL = 'https://api-iv1i.onrender.com/categoria_superficie_producto';
+const API_URL = 'https://api-iv1i.onrender.com/categoria_superficie_producto';
 
-const FacturaDetalle = () => {
-  const [facturaDetalles, setFacturaDetalles] = useState([]);
-  const [productos, setProductos] = useState([]);
-  const [facturas, setFacturas] = useState([]);
-  const [categorias, setCategorias] = useState([]);
-  const [editingFacturaDetalle, setEditingFacturaDetalle] = useState(null);
+const CategoriaSuperficie = () => {
+  const [superficies, setSuperficies] = useState([]);
+  const [editingSuperficie, setEditingSuperficie] = useState(null);
   const [formData, setFormData] = useState({
-    factura_id: '',
-    producto_id: '',
-    categoria_id: '',
-    cantidad: '',
-    subtotal: '',
+    superficie_nombre: '',
+    superficie_descripcion: '',
+    categoria_superficie_producto_id: '',
     status: 'A',
     usuario_mod: '',
   });
@@ -27,73 +19,36 @@ const FacturaDetalle = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    fetchFacturaDetalles();
-    fetchProductos();
-    fetchFacturas();
-    fetchCategorias();
+    fetchSuperficies();
   }, []);
 
-  const fetchFacturaDetalles = async () => {
+  const fetchSuperficies = async () => {
     try {
       const response = await axios.get(API_URL);
-      setFacturaDetalles(response.data);
+      setSuperficies(response.data);
     } catch (error) {
-      console.error('Error fetching factura detalles:', error);
-      setErrorMessage('Error al cargar los detalles de la factura. Inténtalo de nuevo más tarde.');
-    }
-  };
-
-  const fetchProductos = async () => {
-    try {
-      const response = await axios.get(PRODUCTO_URL);
-      const productosActivos = response.data.filter(producto => producto.status === 'A');
-      setProductos(productosActivos);
-    } catch (error) {
-      console.error('Error fetching productos:', error);
-      setErrorMessage('Error al cargar los productos. Inténtalo de nuevo más tarde.');
-    }
-  };
-
-  const fetchFacturas = async () => {
-    try {
-      const response = await axios.get(FACTURA_URL);
-      const facturasActivas = response.data.filter(factura => factura.status === 'A');
-      setFacturas(facturasActivas);
-    } catch (error) {
-      console.error('Error fetching facturas:', error);
-      setErrorMessage('Error al cargar las facturas. Inténtalo de nuevo más tarde.');
-    }
-  };
-
-  const fetchCategorias = async () => {
-    try {
-      const response = await axios.get(CATEGORIA_URL);
-      const categoriasActivas = response.data.filter(categoria => categoria.status === 'A');
-      setCategorias(categoriasActivas);
-    } catch (error) {
-      console.error('Error fetching categorias:', error);
-      setErrorMessage('Error al cargar las categorías. Inténtalo de nuevo más tarde.');
+      console.error('Error fetching superficies:', error);
+      setErrorMessage('Error al cargar las superficies. Inténtalo de nuevo más tarde.');
     }
   };
 
   useEffect(() => {
-    if (editingFacturaDetalle) {
+    if (editingSuperficie) {
       setFormData({
-        ...editingFacturaDetalle,
-        usuario_mod: '', // Clear this field on edit
+        ...editingSuperficie,
+        categoria_superficie_producto_id: editingSuperficie.categoria_superficie_producto_id,
+        usuario_mod: '',
       });
     } else {
       resetForm();
     }
-  }, [editingFacturaDetalle]);
+  }, [editingSuperficie]);
 
   const resetForm = () => {
     setFormData({
-      factura_id: '',
-      producto_id: '',
-      categoria_id: '',
-      cantidad: '',
-      subtotal: '',
+      superficie_nombre: '',
+      superficie_descripcion: '',
+      categoria_superficie_producto_id: '',
       status: 'A',
       usuario_mod: '',
     });
@@ -108,24 +63,24 @@ const FacturaDetalle = () => {
     e.preventDefault();
     setErrorMessage('');
     try {
-      if (editingFacturaDetalle) {
-        await axios.put(`${API_URL}/${formData.factura_detalle_id}`, formData);
-        setSuccessMessage('Detalle de factura actualizado exitosamente!');
+      if (editingSuperficie) {
+        await axios.put(`${API_URL}/${formData.categoria_superficie_producto_id}`, formData);
+        setSuccessMessage('Superficie actualizada exitosamente!');
       } else {
         await axios.post(API_URL, formData);
-        setSuccessMessage('Detalle de factura guardado exitosamente!');
+        setSuccessMessage('Superficie guardada exitosamente!');
       }
-      fetchFacturaDetalles();
-      setEditingFacturaDetalle(null);
+      fetchSuperficies();
+      setEditingSuperficie(null);
       resetForm();
     } catch (error) {
-      setErrorMessage('Error guardando el detalle de factura. Inténtalo de nuevo.');
+      setErrorMessage('Error guardando la superficie. Inténtalo de nuevo.');
       console.error('Error details:', error.response ? error.response.data : error.message);
     }
   };
 
-  const handleEdit = (facturaDetalle) => {
-    setEditingFacturaDetalle(facturaDetalle);
+  const handleEdit = (superficie) => {
+    setEditingSuperficie(superficie);
   };
 
   useEffect(() => {
@@ -147,105 +102,40 @@ const FacturaDetalle = () => {
   }, [errorMessage]);
 
   return (
-    <div>
-      <h2 style={{
-        textAlign: 'center',
-        fontWeight: 'bold',
-        letterSpacing: '0.1em',
-        margin: '20px 0'
-      }}>
-        GESTIÓN DE DETALLES DE FACTURA
+    <div className="container">
+      <h2 className="text-center font-weight-bold my-4">
+        GESTIÓN DE CATEGORÍAS DE SUPERFICIE
       </h2>
 
       <form onSubmit={handleSubmit} className="widget-body">
-        <legend><strong>Formulario de Detalle de Factura</strong></legend>
-        <Table>
+        <legend><strong>Formulario de Superficie</strong></legend>
+        <Table responsive>
           <tbody>
             <tr>
-              <td><label htmlFor="factura_id">Factura</label></td>
-              <td>
-                <select
-                  id="factura_id"
-                  name="factura_id"
-                  value={formData.factura_id}
-                  onChange={handleChange}
-                  className="form-control"
-                  required
-                >
-                  <option value="" disabled>Selecciona una factura</option>
-                  {facturas.map((factura) => (
-                    <option key={factura.factura_id} value={factura.factura_id}>
-                      {factura.cliente} - {factura.factura_id}
-                    </option>
-                  ))}
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td><label htmlFor="producto_id">Producto</label></td>
-              <td>
-                <select
-                  id="producto_id"
-                  name="producto_id"
-                  value={formData.producto_id}
-                  onChange={handleChange}
-                  className="form-control"
-                  required
-                >
-                  <option value="" disabled>Selecciona un producto</option>
-                  {productos.map((producto) => (
-                    <option key={producto.producto_id} value={producto.producto_id}>
-                      {producto.nombre}
-                    </option>
-                  ))}
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td><label htmlFor="categoria_id">Categoría Superficie</label></td>
-              <td>
-                <select
-                  id="categoria_id"
-                  name="categoria_id"
-                  value={formData.categoria_id}
-                  onChange={handleChange}
-                  className="form-control"
-                  required
-                >
-                  <option value="" disabled>Selecciona una categoría</option>
-                  {categorias.map((categoria) => (
-                    <option key={categoria.categoria_id} value={categoria.categoria_id}>
-                      {categoria.nombre}
-                    </option>
-                  ))}
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td><label htmlFor="cantidad">Cantidad</label></td>
+              <td><label htmlFor="superficie_nombre">Nombre</label></td>
               <td>
                 <input
-                  id="cantidad"
-                  name="cantidad"
-                  value={formData.cantidad}
+                  id="superficie_nombre"
+                  name="superficie_nombre"
+                  value={formData.superficie_nombre}
                   onChange={handleChange}
-                  placeholder="Cantidad"
-                  type="number"
+                  placeholder="Nombre de la superficie"
+                  type="text"
                   className="form-control"
                   required
                 />
               </td>
             </tr>
             <tr>
-              <td><label htmlFor="subtotal">Subtotal ($)</label></td>
+              <td><label htmlFor="superficie_descripcion">Descripción</label></td>
               <td>
                 <input
-                  id="subtotal"
-                  name="subtotal"
-                  value={formData.subtotal}
+                  id="superficie_descripcion"
+                  name="superficie_descripcion"
+                  value={formData.superficie_descripcion}
                   onChange={handleChange}
-                  placeholder="Subtotal"
-                  type="number"
+                  placeholder="Descripción de la superficie"
+                  type="text"
                   className="form-control"
                   required
                 />
@@ -267,7 +157,7 @@ const FacturaDetalle = () => {
                 </select>
               </td>
             </tr>
-            {editingFacturaDetalle && (
+            {editingSuperficie && (
               <tr>
                 <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
                 <td>
@@ -288,11 +178,11 @@ const FacturaDetalle = () => {
         </Table>
         <div className="form-action bg-transparent ps-0 row mb-3">
           <div className="col-md-12">
-            <button type="submit" className="me-4 btn btn-primary">
-              {editingFacturaDetalle ? 'Actualizar' : 'Agregar'}
+            <button type="submit" className="me-4 btn btn-warning">
+              {editingSuperficie ? 'Actualizar' : 'Agregar'}
             </button>
-            {editingFacturaDetalle && (
-              <button type="button" className="btn btn-default" onClick={() => setEditingFacturaDetalle(null)}>
+            {editingSuperficie && (
+              <button type="button" className="btn btn-default" onClick={() => setEditingSuperficie(null)}>
                 Cancelar
               </button>
             )}
@@ -322,60 +212,49 @@ const FacturaDetalle = () => {
       <Widget
         title={
           <h5>
-            Detalles de Factura <span className="fw-semi-bold">Limpieza</span>
+            Categorías de Superficie <span className="fw-semi-bold">Limpieza</span>
           </h5>
         }
         settings
         close
       >
-        <Table className="table-bordered table-lg mt-lg mb-0">
+        <Table className="table-bordered table-lg mt-lg mb-0" responsive>
           <thead className="text-uppercase">
             <tr>
-              <th>Factura</th>
-              <th>Producto</th>
-              <th>Categoría</th>
-              <th>Cantidad</th>
-              <th>Subtotal</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
               <th>Status</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {facturaDetalles.map((detalle) => {
-              const factura = facturas.find(f => f.factura_id === detalle.factura_id);
-              const producto = productos.find(p => p.producto_id === detalle.producto_id);
-              const categoria = categorias.find(c => c.categoria_id === detalle.categoria_id);
-              return (
-                <tr key={detalle.factura_detalle_id}>
-                  <td>{factura ? `${factura.cliente} - ${factura.factura_id}` : detalle.factura_id}</td>
-                  <td>{producto ? producto.nombre : detalle.producto_id}</td>
-                  <td>{categoria ? categoria.nombre : detalle.categoria_id}</td>
-                  <td>{detalle.cantidad}</td>
-                  <td>${detalle.subtotal.toFixed(2)}</td>
-                  <td style={{ display: 'flex', justifyContent: 'center' }}>
-                    {detalle.status === 'A' ? (
-                      <span className="px-2 btn btn-success btn-xs" style={{ flex: 1 }}>
-                        Activo
-                      </span>
-                    ) : (
-                      <span className="px-2 btn btn-danger btn-xs" style={{ flex: 1 }}>
-                        Inactivo
-                      </span>
-                    )}
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-xs w-100"
-                      onClick={() => handleEdit(detalle)}
-                    >
-                      <span className="d-none d-md-inline-block">Editar</span>
-                      <span className="d-md-none"><i className="la la-edit"></i></span>
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
+            {superficies.map((superficie) => (
+              <tr key={superficie.categoria_superficie_producto_id}>
+                <td>{superficie.superficie_nombre}</td>
+                <td>{superficie.superficie_descripcion}</td>
+                <td style={{ display: 'flex', justifyContent: 'center' }}>
+                  {superficie.status === 'A' ? (
+                    <span className="px-2 btn btn-success btn-xs" style={{ flex: 1 }}>
+                      Activo
+                    </span>
+                  ) : (
+                    <span className="px-2 btn btn-danger btn-xs" style={{ flex: 1 }}>
+                      Inactivo
+                    </span>
+                  )}
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-xs w-100"
+                    onClick={() => handleEdit(superficie)}
+                  >
+                    <span className="d-none d-md-inline-block">Editar</span>
+                    <span className="d-md-none"><i className="la la-edit"></i></span>
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </Table>
       </Widget>
@@ -383,4 +262,4 @@ const FacturaDetalle = () => {
   );
 };
 
-export default FacturaDetalle;
+export default CategoriaSuperficie;

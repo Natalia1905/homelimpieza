@@ -16,6 +16,7 @@ const Inventario = () => {
     inventario_id: '',
     status: 'A',
     usuario_mod: '',
+    fecha_creac: '',
   });
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -38,7 +39,6 @@ const Inventario = () => {
   const fetchProducts = async () => {
     try {
       const response = await axios.get(PRODUCTOS_URL);
-      // Filtramos los productos activos
       const activeProducts = response.data.filter(product => product.status === 'A');
       setProducts(activeProducts);
     } catch (error) {
@@ -50,8 +50,12 @@ const Inventario = () => {
   useEffect(() => {
     if (editingInventario) {
       setFormData({
-        ...editingInventario,
-        usuario_mod: '', // Limpiar el campo usuario_mod al editar
+        producto_id: editingInventario.producto_id,
+        cantidad: editingInventario.cantidad,
+        fecha_creac: new Date(editingInventario.fecha_creac).toISOString().split('T')[0],
+        status: editingInventario.status,
+        usuario_mod: '',
+        inventario_id: editingInventario.inventario_id,
       });
     } else {
       resetForm();
@@ -65,6 +69,7 @@ const Inventario = () => {
       inventario_id: '',
       status: 'A',
       usuario_mod: '',
+      fecha_creac: '',
     });
   };
 
@@ -76,25 +81,28 @@ const Inventario = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
-    try {
-      const { cantidad, producto_id } = formData;
-      const existingInventario = inventarios.find(inv => inv.producto_id === producto_id);
 
-      if (existingInventario) {
-        // Si el inventario ya existe, actualizamos la cantidad
-        const newCantidad = parseInt(existingInventario.cantidad) + parseInt(cantidad);
-        await axios.put(`${API_URL}/${existingInventario.inventario_id}`, {
-          ...existingInventario,
-          cantidad: newCantidad,
-          usuario_mod: formData.usuario_mod || '',
-        });
-        setSuccessMessage('Cantidad actualizada exitosamente!');
+    if (!formData.producto_id || !formData.cantidad || !formData.fecha_creac) {
+      setErrorMessage('Por favor, completa todos los campos requeridos.');
+      return;
+    }
+
+    try {
+      const dataToSend = {
+        cantidad: parseInt(formData.cantidad, 10),
+        producto_id: formData.producto_id,
+        status: formData.status,
+        fecha_creac: formData.fecha_creac,
+        ...(editingInventario ? { usuario_mod: formData.usuario_mod } : {}),
+      };
+
+      if (editingInventario) {
+        await axios.put(`${API_URL}/${formData.inventario_id}`, dataToSend);
+        setSuccessMessage('Inventario actualizado exitosamente!');
       } else {
-        // Si no existe, creamos un nuevo inventario
-        await axios.post(API_URL, formData);
+        await axios.post(API_URL, dataToSend);
         setSuccessMessage('Inventario guardado exitosamente!');
       }
-
       fetchInventarios();
       setEditingInventario(null);
       resetForm();
@@ -141,35 +149,15 @@ const Inventario = () => {
   }, [errorMessage]);
 
   return (
-    <div>
-      <h2 style={{
-        textAlign: 'center',
-        fontWeight: 'bold',
-        letterSpacing: '0.1em',
-        margin: '20px 0'
-      }}>
+    <div className="container">
+      <h2 className="text-center font-weight-bold my-4">
         GESTIÓN DE INVENTARIO
       </h2>
 
       <form onSubmit={handleSubmit} className="widget-body">
         <legend><strong>Formulario de Inventario</strong></legend>
-        <Table>
+        <Table responsive>
           <tbody>
-            <tr>
-              <td><label htmlFor="cantidad">Cantidad</label></td>
-              <td>
-                <input
-                  id="cantidad"
-                  name="cantidad"
-                  value={formData.cantidad}
-                  onChange={handleChange}
-                  placeholder="Cantidad del producto"
-                  type="number"
-                  className="form-control"
-                  required
-                />
-              </td>
-            </tr>
             <tr>
               <td><label htmlFor="producto_id">Producto</label></td>
               <td>
@@ -182,12 +170,41 @@ const Inventario = () => {
                   required
                 >
                   <option value="" disabled>Selecciona un producto</option>
-                  {products.map((product) => (
-                    <option key={product.producto_id} value={product.producto_id}>
-                      {product.nombre}
+                  {products.map((producto) => (
+                    <option key={producto.producto_id} value={producto.producto_id}>
+                      {producto.nombre}
                     </option>
                   ))}
                 </select>
+              </td>
+            </tr>
+            <tr>
+              <td><label htmlFor="cantidad">Cantidad</label></td>
+              <td>
+                <input
+                  id="cantidad"
+                  name="cantidad"
+                  value={formData.cantidad}
+                  placeholder="Cantidad"
+                  onChange={handleChange}
+                  type="number"
+                  className="form-control"
+                  required
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><label htmlFor="fecha_creac">Fecha de Creación</label></td>
+              <td>
+                <input
+                  id="fecha_creac"
+                  name="fecha_creac"
+                  value={formData.fecha_creac}
+                  onChange={handleChange}
+                  type="date"
+                  className="form-control"
+                  required
+                />
               </td>
             </tr>
             <tr>
@@ -226,7 +243,7 @@ const Inventario = () => {
           </tbody>
         </Table>
         <div className="form-action bg-transparent ps-0 row mb-3">
-          <div className="col-md-12">
+          <div className="col-12">
             <button type="submit" className="me-4 btn btn-warning">
               {editingInventario ? 'Actualizar' : 'Agregar'}
             </button>
@@ -239,20 +256,12 @@ const Inventario = () => {
         </div>
 
         {successMessage && (
-          <div
-            className="alert alert-success fade show"
-            role="alert"
-            style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000 }}
-          >
+          <div className="alert alert-success fade show" role="alert">
             {successMessage}
           </div>
         )}
         {errorMessage && (
-          <div
-            className="alert alert-danger fade show"
-            role="alert"
-            style={{ position: 'absolute', top: '70px', right: '20px', zIndex: 1000 }}
-          >
+          <div className="alert alert-danger fade show" role="alert">
             {errorMessage}
           </div>
         )}
@@ -261,19 +270,18 @@ const Inventario = () => {
       <Widget
         title={
           <h5>
-            Inventario <span className="fw-semi-bold">Gestión</span>
+            Inventario <span className="fw-semi-bold">Gestión Agrupada</span>
           </h5>
         }
         settings
         close
       >
-        <Table className="table-bordered table-lg mt-lg mb-0">
+        <Table className="table-bordered table-lg mt-lg mb-0" responsive>
           <thead className="text-uppercase">
             <tr>
               <th>Producto</th>
-              <th>Cantidad</th>
+              <th>Cantidad Total</th>
               <th>Status</th>
-              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -283,13 +291,56 @@ const Inventario = () => {
                 <tr key={inventario.producto_id}>
                   <td>{producto ? producto.nombre : 'No disponible'}</td>
                   <td>{inventario.cantidad}</td>
-                  <td style={{ display: 'flex', justifyContent: 'center' }}>
+                  <td className="text-center">
                     {inventario.status === 'A' ? (
-                      <span className="px-2 btn btn-success btn-xs" style={{ flex: 1 }}>
+                      <span className="px-2 btn btn-success btn-xs">
                         Activo
                       </span>
                     ) : (
-                      <span className="px-2 btn btn-danger btn-xs" style={{ flex: 1 }}>
+                      <span className="px-2 btn btn-danger btn-xs">
+                        Inactivo
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      </Widget>
+
+      <Widget
+        title={
+          <h5>
+            Inventario <span className="fw-semi-bold">Gestión Detallada</span>
+          </h5>
+        }
+        settings
+        close
+      >
+        <Table className="table-bordered table-lg mt-lg mb-0" responsive>
+          <thead className="text-uppercase">
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Status</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {inventarios.map((inventario) => {
+              const producto = products.find(product => product.producto_id === inventario.producto_id);
+              return (
+                <tr key={inventario.inventario_id}>
+                  <td>{producto ? producto.nombre : 'No disponible'}</td>
+                  <td>{inventario.cantidad}</td>
+                  <td className="text-center">
+                    {inventario.status === 'A' ? (
+                      <span className="px-2 btn btn-success btn-xs">
+                        Activo
+                      </span>
+                    ) : (
+                      <span className="px-2 btn btn-danger btn-xs">
                         Inactivo
                       </span>
                     )}
@@ -300,8 +351,7 @@ const Inventario = () => {
                       className="btn btn-primary btn-xs w-100"
                       onClick={() => handleEdit(inventario)}
                     >
-                      <span className="d-none d-md-inline-block">Editar</span>
-                      <span className="d-md-none"><i className="la la-edit"></i></span>
+                      Editar
                     </button>
                   </td>
                 </tr>

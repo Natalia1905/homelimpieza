@@ -16,7 +16,7 @@ const FacturaDetalle = () => {
     factura_id: '',
     producto_id: '',
     cantidad: '',
-    subtotal: '',
+    subtotal: 1, // Set default subtotal to 1
     status: 'A',
     usuario_mod: '',
   });
@@ -42,7 +42,6 @@ const FacturaDetalle = () => {
   const fetchProductos = async () => {
     try {
       const response = await axios.get(PRODUCTO_URL);
-      // Filtrar solo productos activos
       const productosActivos = response.data.filter(producto => producto.status === 'A');
       setProductos(productosActivos);
     } catch (error) {
@@ -54,7 +53,6 @@ const FacturaDetalle = () => {
   const fetchFacturas = async () => {
     try {
       const response = await axios.get(FACTURA_URL);
-      // Filtrar solo facturas activas
       const facturasActivas = response.data.filter(factura => factura.status === 'A');
       setFacturas(facturasActivas);
     } catch (error) {
@@ -67,7 +65,7 @@ const FacturaDetalle = () => {
     if (editingFacturaDetalle) {
       setFormData({
         ...editingFacturaDetalle,
-        usuario_mod: '', // Clear this field on edit
+        usuario_mod: '',
       });
     } else {
       resetForm();
@@ -79,7 +77,7 @@ const FacturaDetalle = () => {
       factura_id: '',
       producto_id: '',
       cantidad: '',
-      subtotal: '',
+      subtotal: 1, // Reset subtotal to 1
       status: 'A',
       usuario_mod: '',
     });
@@ -98,7 +96,9 @@ const FacturaDetalle = () => {
         await axios.put(`${API_URL}/${formData.factura_detalle_id}`, formData);
         setSuccessMessage('Detalle de factura actualizado exitosamente!');
       } else {
-        await axios.post(API_URL, formData);
+        // Add subtotal to formData before submission
+        const newFormData = { ...formData, subtotal: 1 };
+        await axios.post(API_URL, newFormData);
         setSuccessMessage('Detalle de factura guardado exitosamente!');
       }
       fetchFacturaDetalles();
@@ -107,18 +107,6 @@ const FacturaDetalle = () => {
     } catch (error) {
       setErrorMessage('Error guardando el detalle de factura. Inténtalo de nuevo.');
       console.error('Error details:', error.response ? error.response.data : error.message);
-    }
-  };
-
-  const handleStatusChange = async (id, currentStatus) => {
-    const newStatus = currentStatus === 'A' ? 'I' : 'A';
-    try {
-      await axios.patch(`${API_URL}/${id}`, { status: newStatus });
-      fetchFacturaDetalles();
-      setSuccessMessage('Estado actualizado exitosamente!');
-    } catch (error) {
-      console.error('Error updating status:', error);
-      setErrorMessage('Error al actualizar el estado. Inténtalo de nuevo.');
     }
   };
 
@@ -145,19 +133,14 @@ const FacturaDetalle = () => {
   }, [errorMessage]);
 
   return (
-    <div>
-      <h2 style={{
-        textAlign: 'center',
-        fontWeight: 'bold',
-        letterSpacing: '0.1em',
-        margin: '20px 0'
-      }}>
+    <div className="container">
+      <h2 className="text-center font-weight-bold my-4">
         GESTIÓN DE DETALLES DE FACTURA
       </h2>
 
       <form onSubmit={handleSubmit} className="widget-body">
         <legend><strong>Formulario de Detalle de Factura</strong></legend>
-        <Table>
+        <Table responsive>
           <tbody>
             <tr>
               <td><label htmlFor="factura_id">Factura</label></td>
@@ -214,21 +197,7 @@ const FacturaDetalle = () => {
                 />
               </td>
             </tr>
-            <tr>
-              <td><label htmlFor="subtotal">Subtotal ($)</label></td>
-              <td>
-                <input
-                  id="subtotal"
-                  name="subtotal"
-                  value={formData.subtotal}
-                  onChange={handleChange}
-                  placeholder="Subtotal"
-                  type="number"
-                  className="form-control"
-                  required
-                />
-              </td>
-            </tr>
+            {/* Removed the subtotal input */}
             <tr>
               <td><label htmlFor="status">Estado</label></td>
               <td>
@@ -266,7 +235,7 @@ const FacturaDetalle = () => {
         </Table>
         <div className="form-action bg-transparent ps-0 row mb-3">
           <div className="col-md-12">
-            <button type="submit" className="me-4 btn btn-primary">
+            <button type="submit" className="me-4 btn btn-warning">
               {editingFacturaDetalle ? 'Actualizar' : 'Agregar'}
             </button>
             {editingFacturaDetalle && (
@@ -306,53 +275,48 @@ const FacturaDetalle = () => {
         settings
         close
       >
-        <Table className="table-bordered table-lg mt-lg mb-0">
-          <thead className="text-uppercase">
-            <tr>
-              <th>Factura</th>
-              <th>Producto</th>
-              <th>Cantidad</th>
-              <th>Subtotal</th>
-              <th>Status</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {facturaDetalles.map((detalle) => {
-              const factura = facturas.find(f => f.factura_id === detalle.factura_id,);
-              const producto = productos.find(p => p.producto_id === detalle.producto_id);
-              return (
-                <tr key={detalle.factura_detalle_id}>
-                  <td>{factura ? `${factura.cliente} - ${factura.factura_id}` : detalle.factura_id}</td>
-                  <td>{producto ? producto.nombre : detalle.producto_id}</td>
-                  <td>{detalle.cantidad}</td>
-                  <td>${detalle.subtotal}</td>
-                  <td style={{ display: 'flex', justifyContent: 'center' }}>
-                    {detalle.status === 'A' ? (
-                      <span className="px-2 btn btn-success btn-xs" style={{ flex: 1 }}>
-                        Activo
-                      </span>
-                    ) : (
-                      <span className="px-2 btn btn-danger btn-xs" style={{ flex: 1 }}>
-                        Inactivo
-                      </span>
-                    )}
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-xs w-100"
-                      onClick={() => handleEdit(detalle)}
-                    >
-                      <span className="d-none d-md-inline-block">Editar</span>
-                      <span className="d-md-none"><i className="la la-edit"></i></span>
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table>
+       <Table className="table-bordered table-lg mt-lg mb-0" responsive>
+  <thead className="text-uppercase">
+    <tr>
+      <th>Factura</th>
+      <th>Producto</th>
+      <th>Cantidad</th>
+      <th>Subtotal</th>
+      <th>Status</th>
+      <th>Acciones</th>
+    </tr>
+  </thead><tbody>
+  {facturaDetalles.map((detalle) => {
+    // Busca la factura correspondiente para obtener el cliente
+    const producto = productos.find(p => p.producto_id === detalle.producto_id);
+    const factura = facturas.find(f => f.factura_id === detalle.factura_id);
+    const clienteNombre = factura ? factura.cliente : 'Cliente no encontrado'; // Manejo de error
+
+    return (
+      <tr key={detalle.factura_detalle_id}>
+        <td>{detalle.factura_id} - {clienteNombre}</td> {/* Agregado aquí */}
+        <td>{producto ? producto.nombre : 'Producto no encontrado'}</td> {/* Show product name */}
+        <td>{detalle.cantidad}</td>
+        <td>${detalle.subtotal}</td>
+        <td className="text-center">
+          {detalle.status === 'A' ? (
+            <span className="px-2 btn btn-success btn-xs w-100">Activo</span>
+          ) : (
+            <span className="px-2 btn btn-danger btn-xs w-100">Inactivo</span>
+          )}
+        </td>
+        <td>
+          <button className="btn btn-primary btn-xs w-100" onClick={() => handleEdit(detalle)}>
+            Editar
+          </button>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
+</Table>
+
       </Widget>
     </div>
   );

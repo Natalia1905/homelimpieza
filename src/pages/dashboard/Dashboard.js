@@ -56,10 +56,10 @@ class Dashboard extends React.Component {
   render() {
     return (
       <div className={s.root}>
-        <h1 className="page-title">
-          Dashboard &nbsp;
+     <h1 className="page-title" style={{ fontWeight: 'bold' }}>
+          HOGAR Y LIMPIEZA &nbsp;
           <small>
-            <small>The Lucky One</small>
+            <small>Productos de limpieza</small>
           </small>
         </h1>
 
@@ -77,8 +77,8 @@ class Dashboard extends React.Component {
               title={
                 <h5>
                   {" "}
-                  Map
-                  <span className="fw-semi-bold">&nbsp;Statistics</span>
+                  
+                  <span className="fw-semi-bold">&nbsp;Datos recientes (3 años)</span>
                 </h5>
               }
               settings
@@ -92,17 +92,38 @@ class Dashboard extends React.Component {
                 <span className="circle bg-default text-white">
                   <i className="fa fa-map-marker" />
                 </span>{" "}
-                &nbsp; 146 Countries, 2759 Cities
+                &nbsp; 2 Paises, 250 Ciudades
               </p>
               <div className="row progress-stats">
                 <div className="col-md-9 col-12">
-                  <h6 className="name fw-semi-bold">Foreign Visits</h6>
+                  <h6 className="name fw-semi-bold">Visitas Locales </h6>
                   <p className="description deemphasize mb-xs text-white">
-                    Some Cool Text
+                    2 0 2 1 - 2 0 2 4
                   </p>
                   <Progress
-                    color="primary"
-                    value="60"
+                    color="danger"
+                    value="55"
+                    className="bg-subtle-blue progress-xs"
+                  />
+                </div>
+                
+                <div className="col-md-3 col-12 text-center">
+                  <span className="status rounded rounded-lg bg-default text-light">
+                    <small>
+                      <AnimateNumber value={55} />%
+                    </small>
+                  </span>
+                </div>
+              </div>
+              <div className="row progress-stats">
+                <div className="col-md-9 col-12">
+                  <h6 className="name fw-semi-bold">  Visitas Globales</h6>
+                  <p className="description deemphasize mb-xs text-white">
+                    2 0 2 1 - 2 0 2 4
+                  </p>
+                  <Progress
+                    color="warning"
+                    value="75"
                     className="bg-subtle-blue progress-xs"
                   />
                 </div>
@@ -116,33 +137,13 @@ class Dashboard extends React.Component {
               </div>
               <div className="row progress-stats">
                 <div className="col-md-9 col-12">
-                  <h6 className="name fw-semi-bold">Local Visits</h6>
+                  <h6 className="name fw-semi-bold">Frecuencias </h6>
                   <p className="description deemphasize mb-xs text-white">
-                    P. to C. Conversion
-                  </p>
-                  <Progress
-                    color="danger"
-                    value="39"
-                    className="bg-subtle-blue progress-xs"
-                  />
-                </div>
-                <div className="col-md-3 col-12 text-center">
-                  <span className="status rounded rounded-lg bg-default text-light">
-                    <small>
-                      <AnimateNumber value={84} />%
-                    </small>
-                  </span>
-                </div>
-              </div>
-              <div className="row progress-stats">
-                <div className="col-md-9 col-12">
-                  <h6 className="name fw-semi-bold">Sound Frequencies</h6>
-                  <p className="description deemphasize mb-xs text-white">
-                    Average Bitrate
+                    Clientes 
                   </p>
                   <Progress
                     color="success"
-                    value="80"
+                    value="92"
                     className="bg-subtle-blue progress-xs"
                   />
                 </div>
@@ -154,82 +155,26 @@ class Dashboard extends React.Component {
                   </span>
                 </div>
               </div>
-              <h6 className="fw-semi-bold mt">Map Distributions</h6>
-              <p>
-                Tracking: <strong>Active</strong>
-              </p>
-              <p>
-                <span className="circle bg-default text-white">
-                  <i className="fa fa-cog" />
-                </span>
-                &nbsp; 391 elements installed, 84 sets
-              </p>
-              <div className="input-group mt">
-                <input
-                  type="text"
-                  className="form-control bg-custom-dark border-0"
-                  placeholder="Search Map"
-                />
-                <span className="input-group-btn">
-                  <button
-                    type="submit"
-                    className={`btn btn-subtle-blue ${s.searchBtn}`}
-                  >
-                    <i className="fa fa-search text-light" />
-                  </button>
-                </span>
-              </div>
+             
             </Widget>
           </Col>
         </Row>
 
         <Row>
           <Col lg={6} xl={4} xs={12}>
-            <Widget title={<h6> USERBASE GROWTH </h6>} close settings>
+            <Widget title={<h6> CRECIMIENTO LOCAL</h6>} close settings>
               <div className="stats-row">
                 <div className="stat-item">
-                  <h6 className="name">Overall Growth</h6>
-                  <p className="value">76.38%</p>
+                  <h6 className="name">Crecimiento Total</h6>
+                  <p className="value">60.38%</p>
                 </div>
                 <div className="stat-item">
-                  <h6 className="name">Montly</h6>
-                  <p className="value">10.38%</p>
+                  <h6 className="name">Mensual</h6>
+                  <p className="value">80.38%</p>
                 </div>
                 <div className="stat-item">
                   <h6 className="name">24h</h6>
-                  <p className="value">3.38%</p>
-                </div>
-              </div>
-              <Progress
-                color="success"
-                value="60"
-                className="bg-subtle-blue progress-xs"
-              />
-              <p>
-                <small>
-                  <span className="circle bg-default text-white mr-2">
-                    <i className="fa fa-chevron-up" />
-                  </span>
-                </small>
-                <span className="fw-semi-bold">&nbsp;17% higher</span>
-                &nbsp;than last month
-              </p>
-            </Widget>
-          </Col>
-          <Col lg={6} xl={4} xs={12}>
-            <Widget title={<h6> TRAFFIC VALUES </h6>} close settings>
-              <div className="stats-row">
-                <div className="stat-item">
-                  <h6 className="name">Overall Values</h6>
-                  <p className="value">17 567 318</p>
-                </div>
-                <div className="stat-item">
-                  <h6 className="name">Montly</h6>
-                  <p className="value">55 120</p>
-                </div>
-                <div className="stat-item">
-                  <h6 className="name">24h</h6>
-                  <p className="value">9 695</p>
+                  <p className="value">2.38%</p>
                 </div>
               </div>
               <Progress
@@ -240,33 +185,65 @@ class Dashboard extends React.Component {
               <p>
                 <small>
                   <span className="circle bg-default text-white mr-2">
-                    <i className="fa fa-chevron-down" />
+                    <i className="fa fa-chevron-up" />
                   </span>
                 </small>
-                <span className="fw-semi-bold">&nbsp;8% lower</span>
-                &nbsp;than last month
+                <span className="fw-semi-bold">&nbsp;10% más</span>
+                &nbsp;que el mes pasado
               </p>
             </Widget>
           </Col>
           <Col lg={6} xl={4} xs={12}>
-            <Widget title={<h6> RANDOM VALUES </h6>} close settings>
+            <Widget title={<h6> CRECIMIENTO GLOBAL </h6>} close settings>
               <div className="stats-row">
                 <div className="stat-item">
-                  <h6 className="name fs-sm">Overcome T.</h6>
-                  <p className="value">104.85%</p>
+                  <h6 className="name">Crecimiento Total</h6>
+                  <p className="value">77.33%</p>
                 </div>
                 <div className="stat-item">
-                  <h6 className="name fs-sm">Takeoff Angle</h6>
-                  <p className="value">14.29&deg;</p>
+                  <h6 className="name">Mensual</h6>
+                  <p className="value">85.54%</p>
                 </div>
                 <div className="stat-item">
-                  <h6 className="name fs-sm">World Pop.</h6>
-                  <p className="value">7,211M</p>
+                  <h6 className="name">24h</h6>
+                  <p className="value">80.23%</p>
                 </div>
               </div>
               <Progress
-                color="bg-primary"
-                value="60"
+                color="warning"
+                value="79"
+                className="bg-subtle-blue progress-xs"
+              />
+              <p>
+                <small>
+                  <span className="circle bg-default text-white mr-2">
+                    <i className="fa fa-chevron-down" />
+                  </span>
+                </small>
+                <span className="fw-semi-bold">&nbsp;17% más</span>
+                &nbsp;que el mes pasado 
+              </p>
+            </Widget>
+          </Col>
+          <Col lg={6} xl={4} xs={12}>
+            <Widget title={<h6> FRECUENCIAS </h6>} close settings>
+              <div className="stats-row">
+                <div className="stat-item">
+                  <h6 className="name fs-sm">Crecimiento Total</h6>
+                  <p className="value">98.34%</p>
+                </div>
+                <div className="stat-item">
+                  <h6 className="name fs-sm">Mensual</h6>
+                  <p className="value">94.29%</p>
+                </div>
+                <div className="stat-item">
+                  <h6 className="name fs-sm">24h</h6>
+                  <p className="value">93%</p>
+                </div>
+              </div>
+              <Progress
+                color="bg-success"
+                value="95"
                 className="bg-subtle-blue progress-xs"
               />
               <p>
@@ -275,8 +252,8 @@ class Dashboard extends React.Component {
                     <i className="fa fa-plus" />
                   </span>
                 </small>
-                <span className="fw-semi-bold">&nbsp;8 734 higher</span>
-                &nbsp;than last month
+                <span className="fw-semi-bold">&nbsp;20% más</span>
+                &nbsp;que el mes pasado
               </p>
             </Widget>
           </Col>
@@ -287,7 +264,7 @@ class Dashboard extends React.Component {
             <Widget
               title={
                 <h6>
-                  <span className="badge badge-success mr-2">New</span> Messages
+                  <span className="badge badge-success mr-2">Nuevos</span> Mensajes
                 </h6>
               }
               refresh
@@ -295,22 +272,7 @@ class Dashboard extends React.Component {
             >
               <div className="widget-body undo_padding">
                 <div className="list-group list-group-lg">
-                  <button className="list-group-item text-left">
-                    <span className="thumb-sm float-left mr">
-                      <img
-                        className="rounded-circle"
-                        src={peopleA2}
-                        alt="..."
-                      />
-                      <i className="status status-bottom bg-success" />
-                    </span>
-                    <div>
-                      <h6 className="m-0">Chris Gray</h6>
-                      <p className="help-block text-ellipsis m-0">
-                        Hey! What&apos;s up? So many times since we
-                      </p>
-                    </div>
-                  </button>
+                 
                   <button className="list-group-item text-left">
                     <span className="thumb-sm float-left mr">
                       <img
@@ -321,9 +283,9 @@ class Dashboard extends React.Component {
                       <i className="status status-bottom bg-success" />
                     </span>
                     <div>
-                      <h6 className="m-0">Natalia</h6>
+                      <h6 className="m-0">Michael Guzman</h6>
                       <p className="help-block text-ellipsis m-0">
-                        Good news coming tonight. Seems they agreed to proceed
+                        Buenas noticias.
                       </p>
                     </div>
                   </button>
@@ -337,9 +299,9 @@ class Dashboard extends React.Component {
                       <i className="status status-bottom bg-primary" />
                     </span>
                     <div>
-                      <h6 className="m-0">Livia Walsh</h6>
+                      <h6 className="m-0">Natalia Martínez</h6>
                       <p className="help-block text-ellipsis m-0">
-                        Check my latest email plz!
+                        Productos actualizados!
                       </p>
                     </div>
                   </button>
@@ -353,9 +315,9 @@ class Dashboard extends React.Component {
                       <i className="status status-bottom bg-danger" />
                     </span>
                     <div>
-                      <h6 className="m-0">Jaron Fitzroy</h6>
+                      <h6 className="m-0">Fernando Olvera</h6>
                       <p className="help-block text-ellipsis m-0">
-                        What about summer break?
+                        Qué actualización hay esta semana?
                       </p>
                     </div>
                   </button>
@@ -376,16 +338,16 @@ class Dashboard extends React.Component {
               title={
                 <h6>
                   {" "}
-                  Market <span className="fw-semi-bold">Stats</span>
+                  Ventas <span className="fw-semi-bold">Estrellas</span>
                 </h6>
               }
               close
             >
               <div className="widget-body">
-                <h3>$720 Earned</h3>
+                <h3>POR DIA</h3>
                 <p className="fs-mini text-muted mb mt-sm">
-                  Target <span className="fw-semi-bold">$820</span> day earnings
-                  is <span className="fw-semi-bold">96%</span> reached.
+                 Mejores <span className="fw-semi-bold"></span> categorias
+                  con <span className="fw-semi-bold">mayor</span> rachas.
                 </p>
               </div>
               <div className={`widget-table-overflow ${s.table}`}>
@@ -405,8 +367,9 @@ class Dashboard extends React.Component {
                           <Label for="checkbox210" />
                         </div>
                       </th>
-                      <th>&nbsp;</th>
-                      <th>&nbsp;</th>
+                      <td>Oficinas</td>
+                      <td className="text-align-right fw-semi-bold">$346.1</td>
+                     
                     </tr>
                   </thead>
                   <tbody>
@@ -424,7 +387,7 @@ class Dashboard extends React.Component {
                           <Label for="checkbox212" />
                         </div>
                       </td>
-                      <td>HP Core i7</td>
+                      <td>Oficinas</td>
                       <td className="text-align-right fw-semi-bold">$346.1</td>
                     </tr>
                     <tr>
@@ -441,7 +404,7 @@ class Dashboard extends React.Component {
                           <Label for="checkbox214" />
                         </div>
                       </td>
-                      <td>Air Pro</td>
+                      <td>Hogar</td>
                       <td className="text-align-right fw-semi-bold">$533.1</td>
                     </tr>
                   </tbody>
@@ -459,7 +422,7 @@ class Dashboard extends React.Component {
 
           <Col lg={4} xs={12}>
             <Widget
-              title={<h6>Calendar</h6>}
+              title={<h6>Calendario</h6>}
               settings
               close
               bodyClass={"pt-2 px-0 py-0"}
@@ -467,16 +430,16 @@ class Dashboard extends React.Component {
               <Calendar />
               <div className="list-group fs-mini">
                 <button className="list-group-item text-ellipsis">
-                  <span className="badge badge-pill badge-primary float-right">
+                  <span className="badge badge-pill badge-success float-right">
                     6:45
                   </span>
-                  Weed out the flower bed
+                  Actualizar tablas cada semana
                 </button>
                 <button className="list-group-item text-ellipsis">
-                  <span className="badge badge-pill badge-success float-right">
+                  <span className="badge badge-pill badge-danger float-right">
                     9:41
                   </span>
-                  Stop world water pollution
+                  Mantenimiento sistema domingos
                 </button>
               </div>
             </Widget>

@@ -1,4 +1,4 @@
-import Widget from '../../components/Widget';
+import Widget from '../../components/Widget'; 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Table } from 'reactstrap';
@@ -144,7 +144,7 @@ const Promocion = () => {
 
       <form onSubmit={handleSubmit} className="widget-body">
         <legend><strong>Formulario de Promoción</strong></legend>
-        <Table>
+        <Table responsive>
           <tbody>
             <tr>
               <td><label htmlFor="nombre_promocion">Nombre de la Promoción</label></td>
@@ -154,6 +154,7 @@ const Promocion = () => {
                   name="nombre_promocion"
                   value={formData.nombre_promocion}
                   onChange={handleChange}
+                  placeholder="Nombre de la promoción"
                   type="text"
                   className="form-control"
                   required
@@ -168,6 +169,7 @@ const Promocion = () => {
                   name="descripcion"
                   value={formData.descripcion}
                   onChange={handleChange}
+                  placeholder="Descripción breve"
                   type="text"
                   className="form-control"
                   required
@@ -182,6 +184,7 @@ const Promocion = () => {
                   name="porcentaje_descuento"
                   value={formData.porcentaje_descuento}
                   onChange={handleChange}
+                  placeholder="Porcentaje"
                   type="number"
                   className="form-control"
                   required
@@ -298,13 +301,13 @@ const Promocion = () => {
       <Widget
         title={
           <h5>
-            Promociones <span className="fw-semi-bold">Disponibles</span>
+            Tabla <span className="fw-semi-bold">Promociones</span>
           </h5>
         }
         settings
         close
       >
-        <Table className="table-bordered table-lg mt-lg mb-0">
+        <Table responsive className="table-bordered table-lg mt-lg mb-0">
           <thead className="text-uppercase">
             <tr>
               <th>Nombre</th>

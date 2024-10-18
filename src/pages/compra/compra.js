@@ -160,7 +160,7 @@ const CompraProducto = () => {
   }, [errorMessage]);
 
   return (
-    <div>
+    <div className="container">
       <h2 style={{
         textAlign: 'center',
         fontWeight: 'bold',
@@ -172,7 +172,7 @@ const CompraProducto = () => {
 
       <form onSubmit={handleSubmit} className="widget-body">
         <legend><strong>Formulario de Compra</strong></legend>
-        <Table>
+        <Table responsive>
           <tbody>
             <tr>
               <td><label htmlFor="proveedor_id">Proveedor</label></td>
@@ -346,7 +346,7 @@ const CompraProducto = () => {
         settings
         close
       >
-        <Table className="table-bordered table-lg mt-lg mb-0">
+        <Table className="table-bordered table-lg mt-lg mb-0" responsive>
           <thead className="text-uppercase">
             <tr>
               <th>Proveedor</th>

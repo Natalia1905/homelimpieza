@@ -10,7 +10,7 @@ const Categorias = () => {
   const [editingCategory, setEditingCategory] = useState(null);
   const [formData, setFormData] = useState({
     nombre_categoria: '',
-    descripcion: '', // Nueva columna
+    descripcion: '',
     fecha_creac: '',
     status: 'A',
     usuario_mod: '',
@@ -45,7 +45,7 @@ const Categorias = () => {
   const resetForm = () => {
     setFormData({
       nombre_categoria: '',
-      descripcion: '', // Reiniciar descripción
+      descripcion: '',
       fecha_creac: '',
       status: 'A',
       usuario_mod: '',
@@ -82,14 +82,12 @@ const Categorias = () => {
   };
 
   return (
-    <div>
-      <h2 style={{ textAlign: 'center', fontWeight: 'bold', letterSpacing: '0.1em', margin: '20px 0' }}>
-        GESTIÓN DE CATEGORÍAS
-      </h2>
+    <div className="container">
+      <h2 className="text-center font-weight-bold my-4">GESTIÓN DE CATEGORÍAS</h2>
 
       <form onSubmit={handleSubmit} className="widget-body">
         <legend><strong>Formulario de Categoría</strong></legend>
-        <Table>
+        <Table responsive>
           <tbody>
             <tr>
               <td><label htmlFor="nombre_categoria">Nombre</label></td>
@@ -185,11 +183,11 @@ const Categorias = () => {
         settings
         close
       >
-        <Table className="table-bordered table-lg mt-lg mb-0">
+        <Table className="table-bordered table-lg mt-lg mb-0" responsive>
           <thead className="text-uppercase">
             <tr>
               <th>Nombre</th>
-              <th>Descripción</th> {/* Nueva columna */}
+              <th>Descripción</th>
               <th>Status</th>
               <th>Acciones</th>
             </tr>
@@ -198,7 +196,7 @@ const Categorias = () => {
             {categories.map((category) => (
               <tr key={category.categoria_id}>
                 <td>{category.nombre_categoria}</td>
-                <td>{category.descripcion}</td> {/* Mostrar descripción */}
+                <td>{category.descripcion}</td>
                 <td style={{ textAlign: 'center' }}>
                   {category.status === 'A' ? (
                     <span className="px-2 btn btn-success btn-xs" style={{ display: 'block', width: '100%' }}>

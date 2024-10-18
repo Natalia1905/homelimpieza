@@ -40,9 +40,7 @@ const Typography = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(CATEGORIAS_URL);
-      // Filtramos solo las categorías activas
       const activeCategories = response.data.filter(category => category.status === 'A');
-      console.log('Categorías activas obtenidas:', activeCategories);
       setCategories(activeCategories);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -95,19 +93,6 @@ const Typography = () => {
       resetForm();
     } catch (error) {
       setErrorMessage('Error guardando el producto. Inténtalo de nuevo.');
-      console.error('Error details:', error.response ? error.response.data : error.message);
-    }
-  };
-
-  const handleStatusChange = async (id, currentStatus) => {
-    const newStatus = currentStatus === 'A' ? 'I' : 'A';
-    try {
-      await axios.patch(`${API_URL}/${id}`, { status: newStatus });
-      fetchProducts();
-      setSuccessMessage('Estado actualizado exitosamente!');
-    } catch (error) {
-      console.error('Error updating status:', error);
-      setErrorMessage('Error al actualizar el estado. Inténtalo de nuevo.');
     }
   };
 
@@ -134,19 +119,12 @@ const Typography = () => {
   }, [errorMessage]);
 
   return (
-    <div>
-      <h2 style={{
-        textAlign: 'center',
-        fontWeight: 'bold',
-        letterSpacing: '0.1em',
-        margin: '20px 0'
-      }}>
-        GESTIÓN DE PRODUCTOS
-      </h2>
+    <div className="container">
+      <h2 className="text-center font-weight-bold my-4">GESTIÓN DE PRODUCTOS</h2>
 
       <form onSubmit={handleSubmit} className="widget-body">
         <legend><strong>Formulario de Producto</strong></legend>
-        <Table>
+        <Table responsive>
           <tbody>
             <tr>
               <td><label htmlFor="nombre">Nombre</label></td>
@@ -190,7 +168,7 @@ const Typography = () => {
                     onChange={handleChange}
                     placeholder="Precio del producto"
                     type="number"
-                    className="form-control-16 form-control"
+                    className="form-control"
                     required
                   />
                   <span className="input-group-text">.00</span>
@@ -253,7 +231,7 @@ const Typography = () => {
           </tbody>
         </Table>
         <div className="form-action bg-transparent ps-0 row mb-3">
-          <div className="col-md-12">
+          <div className="col-12">
             <button type="submit" className="me-4 btn btn-warning">
               {editingProduct ? 'Actualizar' : 'Agregar'}
             </button>
@@ -266,20 +244,12 @@ const Typography = () => {
         </div>
 
         {successMessage && (
-          <div
-            className="alert alert-success fade show"
-            role="alert"
-            style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000 }}
-          >
+          <div className="alert alert-success fade show" role="alert">
             {successMessage}
           </div>
         )}
         {errorMessage && (
-          <div
-            className="alert alert-danger fade show"
-            role="alert"
-            style={{ position: 'absolute', top: '70px', right: '20px', zIndex: 1000 }}
-          >
+          <div className="alert alert-danger fade show" role="alert">
             {errorMessage}
           </div>
         )}
@@ -294,7 +264,7 @@ const Typography = () => {
         settings
         close
       >
-        <Table className="table-bordered table-lg mt-lg mb-0">
+        <Table className="table-bordered table-lg mt-lg mb-0" responsive>
           <thead className="text-uppercase">
             <tr>
               <th>Nombre</th>
@@ -312,11 +282,11 @@ const Typography = () => {
                 <td>${product.precio}</td>
                 <td style={{ display: 'flex', justifyContent: 'center' }}>
                   {product.status === 'A' ? (
-                    <span className="px-2 btn btn-success btn-xs" style={{ flex: 1 }}>
+                    <span className="px-2 btn btn-success btn-xs w-100">
                       Activo
                     </span>
                   ) : (
-                    <span className="px-2 btn btn-danger btn-xs" style={{ flex: 1 }}>
+                    <span className="px-2 btn btn-danger btn-xs w-100">
                       Inactivo
                     </span>
                   )}

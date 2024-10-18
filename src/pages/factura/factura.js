@@ -1,4 +1,4 @@
-import Widget from '../../components/Widget';
+import Widget from '../../components/Widget'; 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Table } from 'reactstrap';
@@ -55,12 +55,13 @@ const Facturacion = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
   
-    const { cliente,  fecha, status, usuario_mod } = formData;
+    const { cliente, fecha, status, usuario_mod } = formData;
   
     if (!cliente || !fecha) {
       setErrorMessage('Todos los campos son obligatorios.');
@@ -91,19 +92,6 @@ const Facturacion = () => {
     }
   };
   
-
-  const handleStatusChange = async (id, currentStatus) => {
-    const newStatus = currentStatus === 'A' ? 'I' : 'A';
-    try {
-      await axios.patch(`${API_URL}/${id}`, { status: newStatus });
-      fetchFacturas();
-      setSuccessMessage('Estado actualizado exitosamente!');
-    } catch (error) {
-      console.error('Error updating status:', error);
-      setErrorMessage('Error al actualizar el estado. Inténtalo de nuevo.');
-    }
-  };
-
   const handleEdit = (factura) => {
     setEditingFactura(factura);
   };
@@ -127,19 +115,14 @@ const Facturacion = () => {
   }, [errorMessage]);
 
   return (
-    <div>
-      <h2 style={{
-        textAlign: 'center',
-        fontWeight: 'bold',
-        letterSpacing: '0.1em',
-        margin: '20px 0'
-      }}>
+    <div className="container">
+      <h2 className="text-center font-weight-bold my-4">
         GESTIÓN DE FACTURAS
       </h2>
 
       <form onSubmit={handleSubmit} className="widget-body">
         <legend><strong>Formulario de Factura</strong></legend>
-        <Table>
+        <Table responsive>
           <tbody>
             <tr>
               <td><label htmlFor="cliente">Cliente</label></td>
@@ -249,7 +232,7 @@ const Facturacion = () => {
         settings
         close
       >
-        <Table className="table-bordered table-lg mt-lg mb-0">
+        <Table className="table-bordered table-lg mt-lg mb-0" responsive>
           <thead className="text-uppercase">
             <tr>
               <th>Cliente</th>
@@ -263,25 +246,24 @@ const Facturacion = () => {
               <tr key={factura.factura_id}>
                 <td>{factura.cliente}</td>
                 <td>{new Date(factura.fecha).toLocaleString()}</td>
-                <td style={{ display: 'flex', justifyContent: 'center' }}>
+                <td className="text-center">
                   {factura.status === 'A' ? (
-                    <span className="px-2 btn btn-success btn-xs" style={{ flex: 1 }}>
+                    <span className="px-2 btn btn-success btn-xs w-100">
                       Activo
                     </span>
                   ) : (
-                    <span className="px-2 btn btn-danger btn-xs" style={{ flex: 1 }}>
+                    <span className="px-2 btn btn-danger btn-xs w-100">
                       Inactivo
                     </span>
                   )}
                 </td>
                 <td>
                   <button
-                    className="btn btn-primary btn-xs"
+                    className="btn btn-primary btn-xs w-100"
                     onClick={() => handleEdit(factura)}
                   >
                     Editar
                   </button>
-                 
                 </td>
               </tr>
             ))}

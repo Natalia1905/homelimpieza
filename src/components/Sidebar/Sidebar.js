@@ -21,8 +21,6 @@ import FacturaIcon from '../Icons/SidebarIcons/FacturaIcon';
 import FacturaDetalleIcon from '../Icons/SidebarIcons/FacturaDetalleIcon';
 import SuperIcon from '../Icons/SidebarIcons/SuperIcon';
 
-
-
 class Sidebar extends React.Component {
     static propTypes = {
         sidebarStatic: PropTypes.bool,
@@ -41,8 +39,12 @@ class Sidebar extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            rol: '1', // Valor inicial: '1' para admin
+        };
 
         this.doLogout = this.doLogout.bind(this);
+        this.handleRoleChange = this.handleRoleChange.bind(this);
     }
 
     componentDidMount() {
@@ -74,7 +76,13 @@ class Sidebar extends React.Component {
         this.props.dispatch(logoutUser());
     }
 
+    handleRoleChange(event) {
+        this.setState({ rol: event.target.value });
+    }
+
     render() {
+        const { rol } = this.state;
+
         return (
             <nav
                 className={cx(s.root)}
@@ -83,9 +91,16 @@ class Sidebar extends React.Component {
                 }}
             >
                 <header className={s.logo}>
-                    <a href="">Hogar <span
-                        className="fw-bold">y Limpieza</span></a>
+                    <a href="">Hogar <span className="fw-bold">y Limpieza</span></a>
                 </header>
+                
+                {/* Selector de rol */}
+                <select  className={s.roleSelect}  onChange={this.handleRoleChange} value={rol}>
+                    <option value="1">Administrador</option>
+                    <option value="2">Coordinador</option>
+                    <option value="3">Analista</option>
+                </select>
+
                 <ul className={s.nav}>
                     <LinksGroup
                         onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
@@ -97,100 +112,184 @@ class Sidebar extends React.Component {
                         index="main"
                     />
                     <h5 className={[s.navTitle, s.groupTitle].join(' ')}>TEMPLATE</h5>
-                    <LinksGroup
-                        onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-                        activeItem={this.props.activeItem}
-                        header="Productos"
-                        isHeader
-                        iconName={<TypographyIcon className={s.menuIcon} />}
-                        link="/app/typography"
-                        index="core"
-                    />
-                    <LinksGroup
-                        onActiveSidebarItemChange={t => this.props.dispatch(changeActiveSidebarItem(t))}
-                        activeItem={this.props.activeItem}
-                        header="Categoria"
-                        isHeader
-                        iconName={<TablesIcon className={s.menuIcon} />}
-                        link="/app/tables"
-                        index="tables"
-                    />
-                    <LinksGroup
-                        onActiveSidebarItemChange={t => this.props.dispatch(changeActiveSidebarItem(t))}
-                        activeItem={this.props.activeItem}
-                        header="Categoria Superficie"
-                        isHeader
-                        iconName={<SuperIcon className={s.menuIcon} />}
-                        link="/app/Super"
-                        index="super"
-                    />
-                    <LinksGroup
-                        onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-                        activeItem={this.props.activeItem}
-                        header="Inventario"
-                        isHeader
-                        iconName={<NotificationsIcon className={s.menuIcon}/>}
-                        link="/app/notifications"
-                        index="ui"
-                    />
-                     <LinksGroup
-                        onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-                        activeItem={this.props.activeItem}
-                        header="Compra Producto"
-                        isHeader
-                        iconName={<CompraIcon className={s.menuIcon}/>}
-                        link="/app/compra"
-                        index="compra"
-                    />
-                     <LinksGroup
-                        onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-                        activeItem={this.props.activeItem}
-                        header="Promocion"
-                        isHeader
-                        iconName={<PromocionIcon className={s.menuIcon}/>}
-                        link="/app/promocion"
-                        index="promocion"
-                    />
-                     <LinksGroup
-                        onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-                        activeItem={this.props.activeItem}
-                        header="Promocion Producto"
-                        isHeader
-                        iconName={<PromoProductoIcon className={s.menuIcon}/>}
-                        link="/app/promoproducto"
-                        index="promoproducto"
-                    />
-                     <LinksGroup
-                        onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-                        activeItem={this.props.activeItem}
-                        header="Proveedor"
-                        isHeader
-                        iconName={<ProveedorIcon className={s.menuIcon}/>}
-                        link="/app/proveedor"
-                        index="proveedor"
-                    />
-                     <LinksGroup
-                        onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-                        activeItem={this.props.activeItem}
-                        header="Factura"
-                        isHeader
-                        iconName={<FacturaIcon className={s.menuIcon}/>}
-                        link="/app/factura"
-                        index="factura"
-                    />
-                     <LinksGroup
-                        onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-                        activeItem={this.props.activeItem}
-                        header="Factura a Detalle"
-                        isHeader
-                        iconName={<FacturaDetalleIcon className={s.menuIcon}/>}
-                        link="/app/factura_detalle"
-                        index="factura_detalle"
-                    />
+
+                    {rol === '1' && (
+                        <>
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Productos"
+                                isHeader
+                                iconName={<TypographyIcon className={s.menuIcon} />}
+                                link="/app/typography"
+                                index="core"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Categoria"
+                                isHeader
+                                iconName={<TablesIcon className={s.menuIcon} />}
+                                link="/app/tables"
+                                index="tables"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Categoria Superficie"
+                                isHeader
+                                iconName={<SuperIcon className={s.menuIcon} />}
+                                link="/app/super"
+                                index="super"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Inventario"
+                                isHeader
+                                iconName={<NotificationsIcon className={s.menuIcon}/> }
+                                link="/app/notifications"
+                                index="ui"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Compra Producto"
+                                isHeader
+                                iconName={<CompraIcon className={s.menuIcon}/> }
+                                link="/app/compra"
+                                index="compra"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Promocion"
+                                isHeader
+                                iconName={<PromocionIcon className={s.menuIcon}/> }
+                                link="/app/promocion"
+                                index="promocion"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Promocion Producto"
+                                isHeader
+                                iconName={<PromoProductoIcon className={s.menuIcon}/> }
+                                link="/app/promoproducto"
+                                index="promoproducto"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Proveedor"
+                                isHeader
+                                iconName={<ProveedorIcon className={s.menuIcon}/> }
+                                link="/app/proveedor"
+                                index="proveedor"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Factura"
+                                isHeader
+                                iconName={<FacturaIcon className={s.menuIcon}/> }
+                                link="/app/factura"
+                                index="factura"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Factura a Detalle"
+                                isHeader
+                                iconName={<FacturaDetalleIcon className={s.menuIcon}/> }
+                                link="/app/factura_detalle"
+                                index="factura_detalle"
+                            />
+                        </>
+                    )}
+
+                    {rol === '2' && (
+                        <>
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Productos"
+                                isHeader
+                                iconName={<TypographyIcon className={s.menuIcon} />}
+                                link="/app/typography"
+                                index="core"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Categoria"
+                                isHeader
+                                iconName={<TablesIcon className={s.menuIcon} />}
+                                link="/app/tables"
+                                index="tables"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Categoria Superficie"
+                                isHeader
+                                iconName={<SuperIcon className={s.menuIcon} />}
+                                link="/app/super"
+                                index="super"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Inventario"
+                                isHeader
+                                iconName={<NotificationsIcon className={s.menuIcon}/> }
+                                link="/app/notifications"
+                                index="ui"
+                            />
+                        </>
+                    )}
+
+                    {rol === '3' && (
+                        <>
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Inventario"
+                                isHeader
+                                iconName={<NotificationsIcon className={s.menuIcon}/> }
+                                link="/app/notifications"
+                                index="ui"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Compra Producto"
+                                isHeader
+                                iconName={<CompraIcon className={s.menuIcon}/> }
+                                link="/app/compra"
+                                index="compra"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Factura"
+                                isHeader
+                                iconName={<FacturaIcon className={s.menuIcon}/> }
+                                link="/app/factura"
+                                index="factura"
+                            />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Factura a Detalle"
+                                isHeader
+                                iconName={<FacturaDetalleIcon className={s.menuIcon}/> }
+                                link="/app/factura_detalle"
+                                index="factura_detalle"
+                            />
+                        </>
+                    )}
                 </ul>
-              
-             
-                
             </nav>
         );
     }

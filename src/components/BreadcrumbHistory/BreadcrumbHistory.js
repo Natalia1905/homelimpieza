@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Breadcrumb, BreadcrumbItem } from 'reactstrap';
+import { BreadcrumbItem } from 'reactstrap';
 import uuid from 'uuid/v4'
 
 class BreadcrumbHistory extends Component {

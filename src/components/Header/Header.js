@@ -19,8 +19,6 @@ import {
   Badge,
   ButtonGroup,
   Button,
-  Form,
-  FormGroup,
 } from "reactstrap";
 import Notifications from "../Notifications";
 import PowerIcon from "../Icons/HeaderIcons/PowerIcon";
@@ -189,17 +187,11 @@ class Header extends React.Component {
                 >
                   <img src={avatar} alt="..." />
                 </span>
-                <span className={`small d-sm-down-none ${s.accountCheck}`}>Natalia Martínez</span>
+               
                 <Badge className={`d-sm-down-none ${s.badge}`} color="danger">
                   9
                 </Badge>
               </DropdownToggle>
-              <DropdownMenu
-                right
-                className={`${s.notificationsWrapper} py-0 animate__animated animate__faster animate__fadeInUp`}
-              >
-                <Notifications />
-              </DropdownMenu>
             </Dropdown>
             <NavItem className="d-lg-none">
               <NavLink
@@ -223,33 +215,30 @@ class Header extends React.Component {
                 <DropdownItem>
                   <img className={s.image} src={sender1} alt="" />
                   <div className={s.details}>
-                    <div>Jane Hew</div>
-                    <div className={s.text}>Hey, John! How is it going? ...</div>
+                    <div>Natalia Martínez</div>
+                    <div className={s.text}>Administradora</div>
                   </div>
                 </DropdownItem>
                 <DropdownItem>
                   <img className={s.image} src={sender2} alt="" />
                   <div className={s.details}>
-                    <div>Alies Rumiancaŭ</div>
+                    <div>Fernando Olvera</div>
                     <div className={s.text}>
-                      I will definitely buy this template
+                      Coordinador
                     </div>
                   </div>
                 </DropdownItem>
                 <DropdownItem>
                   <img className={s.image} src={sender3} alt="" />
                   <div className={s.details}>
-                    <div>Michał Rumiancaŭ</div>
+                    <div>Michael Guzman</div>
                     <div className={s.text}>
-                      Is it really Lore ipsum? Lore ...
-                    </div>
+                      Analista                    </div>
                   </div>
                 </DropdownItem>
                 <DropdownItem>
                   {/* eslint-disable-next-line */}
-                  <a href="#" className="text-white">
-                    See all messages <ArrowIcon className={s.headerIcon} maskName="messagesArrow" />
-                  </a>
+                  
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>

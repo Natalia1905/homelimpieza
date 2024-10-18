@@ -5,18 +5,19 @@ import { Table } from 'reactstrap';
 
 const API_URL = 'https://api-iv1i.onrender.com/proveedor';
 
-const ProveedorManagement = () => {
+const Proveedor = () => {
   const [proveedores, setProveedores] = useState([]);
-  const [editingProveedor, setEditingProveedor] = useState(null);
   const [formData, setFormData] = useState({
     nombre_proveedor: '',
     nombre_contacto: '',
     telefono: '',
     correo: '',
     direccion: '',
+    proveedor_id: '',
     status: 'A',
     usuario_mod: '',
   });
+  const [editingProveedor, setEditingProveedor] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -38,6 +39,7 @@ const ProveedorManagement = () => {
     if (editingProveedor) {
       setFormData({
         ...editingProveedor,
+        proveedor_id: editingProveedor.proveedor_id,
         usuario_mod: '',
       });
     } else {
@@ -52,6 +54,7 @@ const ProveedorManagement = () => {
       telefono: '',
       correo: '',
       direccion: '',
+      proveedor_id: '',
       status: 'A',
       usuario_mod: '',
     });
@@ -78,19 +81,6 @@ const ProveedorManagement = () => {
       resetForm();
     } catch (error) {
       setErrorMessage('Error guardando el proveedor. Inténtalo de nuevo.');
-      console.error('Error details:', error.response ? error.response.data : error.message);
-    }
-  };
-
-  const handleStatusChange = async (id, currentStatus) => {
-    const newStatus = currentStatus === 'A' ? 'I' : 'A';
-    try {
-      await axios.patch(`${API_URL}/${id}`, { status: newStatus });
-      fetchProveedores();
-      setSuccessMessage('Estado actualizado exitosamente!');
-    } catch (error) {
-      console.error('Error updating status:', error);
-      setErrorMessage('Error al actualizar el estado. Inténtalo de nuevo.');
     }
   };
 
@@ -117,19 +107,12 @@ const ProveedorManagement = () => {
   }, [errorMessage]);
 
   return (
-    <div>
-      <h2 style={{
-        textAlign: 'center',
-        fontWeight: 'bold',
-        letterSpacing: '0.1em',
-        margin: '20px 0'
-      }}>
-        GESTIÓN DE PROVEEDORES
-      </h2>
+    <div className="container">
+      <h2 className="text-center font-weight-bold my-4">GESTIÓN DE PROVEEDORES</h2>
 
       <form onSubmit={handleSubmit} className="widget-body">
         <legend><strong>Formulario de Proveedor</strong></legend>
-        <Table>
+        <Table responsive>
           <tbody>
             <tr>
               <td><label htmlFor="nombre_proveedor">Nombre del Proveedor</label></td>
@@ -184,7 +167,7 @@ const ProveedorManagement = () => {
                   name="correo"
                   value={formData.correo}
                   onChange={handleChange}
-                  placeholder="Correo"
+                  placeholder="Correo electrónico"
                   type="email"
                   className="form-control"
                   required
@@ -202,7 +185,6 @@ const ProveedorManagement = () => {
                   placeholder="Dirección"
                   type="text"
                   className="form-control"
-                  required
                 />
               </td>
             </tr>
@@ -242,7 +224,7 @@ const ProveedorManagement = () => {
           </tbody>
         </Table>
         <div className="form-action bg-transparent ps-0 row mb-3">
-          <div className="col-md-12">
+          <div className="col-12">
             <button type="submit" className="me-4 btn btn-warning">
               {editingProveedor ? 'Actualizar' : 'Agregar'}
             </button>
@@ -255,20 +237,12 @@ const ProveedorManagement = () => {
         </div>
 
         {successMessage && (
-          <div
-            className="alert alert-success fade show"
-            role="alert"
-            style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000 }}
-          >
+          <div className="alert alert-success fade show" role="alert">
             {successMessage}
           </div>
         )}
         {errorMessage && (
-          <div
-            className="alert alert-danger fade show"
-            role="alert"
-            style={{ position: 'absolute', top: '70px', right: '20px', zIndex: 1000 }}
-          >
+          <div className="alert alert-danger fade show" role="alert">
             {errorMessage}
           </div>
         )}
@@ -277,21 +251,19 @@ const ProveedorManagement = () => {
       <Widget
         title={
           <h5>
-            Proveedores <span className="fw-semi-bold">Listados</span>
+            Proveedores <span className="fw-semi-bold">Registro</span>
           </h5>
         }
         settings
         close
       >
-        <Table className="table-bordered table-lg mt-lg mb-0">
+        <Table className="table-bordered table-lg mt-lg mb-0" responsive>
           <thead className="text-uppercase">
             <tr>
-              <th>Nombre</th>
+              <th>Nombre del Proveedor</th>
               <th>Nombre de Contacto</th>
               <th>Teléfono</th>
-              <th>Correo</th>
-              <th>Dirección</th>
-              <th>Status</th>
+              <th>Estado</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -301,17 +273,11 @@ const ProveedorManagement = () => {
                 <td>{proveedor.nombre_proveedor}</td>
                 <td>{proveedor.nombre_contacto}</td>
                 <td>{proveedor.telefono}</td>
-                <td>{proveedor.correo}</td>
-                <td>{proveedor.direccion}</td>
                 <td style={{ display: 'flex', justifyContent: 'center' }}>
                   {proveedor.status === 'A' ? (
-                    <span className="px-2 btn btn-success btn-xs" style={{ flex: 1 }}>
-                      Activo
-                    </span>
+                    <span className="px-2 btn btn-success btn-xs w-100">Activo</span>
                   ) : (
-                    <span className="px-2 btn btn-danger btn-xs" style={{ flex: 1 }}>
-                      Inactivo
-                    </span>
+                    <span className="px-2 btn btn-danger btn-xs w-100">Inactivo</span>
                   )}
                 </td>
                 <td>
@@ -323,7 +289,6 @@ const ProveedorManagement = () => {
                     <span className="d-none d-md-inline-block">Editar</span>
                     <span className="d-md-none"><i className="la la-edit"></i></span>
                   </button>
-                  
                 </td>
               </tr>
             ))}
@@ -334,4 +299,4 @@ const ProveedorManagement = () => {
   );
 };
 
-export default ProveedorManagement;
+export default Proveedor;
