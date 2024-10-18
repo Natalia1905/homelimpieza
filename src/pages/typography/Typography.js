@@ -4,18 +4,20 @@ import axios from 'axios';
 import { Table } from 'reactstrap';
 
 const API_URL = 'https://api-iv1i.onrender.com/producto';
-const CATEGORIAS_URL = 'https://api-iv1i.onrender.com/categoria';
+const CATEGORIA_URL = 'https://api-iv1i.onrender.com/categoria';
+const CATEGORIA_SUPERFICIE_URL = 'https://api-iv1i.onrender.com/categoria_superficie_producto';
 
-const Typography = () => {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [editingProduct, setEditingProduct] = useState(null);
+const Producto = () => {
+  const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [categoriasSuperficie, setCategoriasSuperficie] = useState([]);
+  const [editingProducto, setEditingProducto] = useState(null);
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
     precio: '',
     categoria_id: '',
-    producto_id: '',
+    categoria_superficie_producto_id: '',
     status: 'A',
     usuario_mod: '',
   });
@@ -23,42 +25,51 @@ const Typography = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    fetchProducts();
-    fetchCategories();
+    fetchProductos();
+    fetchCategorias();
+    fetchCategoriasSuperficie();
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchProductos = async () => {
     try {
       const response = await axios.get(API_URL);
-      setProducts(response.data);
+      setProductos(response.data);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Error fetching productos:', error);
       setErrorMessage('Error al cargar los productos. Inténtalo de nuevo más tarde.');
     }
   };
 
-  const fetchCategories = async () => {
+  const fetchCategorias = async () => {
     try {
-      const response = await axios.get(CATEGORIAS_URL);
-      const activeCategories = response.data.filter(category => category.status === 'A');
-      setCategories(activeCategories);
+      const response = await axios.get(CATEGORIA_URL);
+      setCategorias(response.data);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error('Error fetching categorias:', error);
       setErrorMessage('Error al cargar las categorías. Inténtalo de nuevo más tarde.');
     }
   };
 
+  const fetchCategoriasSuperficie = async () => {
+    try {
+      const response = await axios.get(CATEGORIA_SUPERFICIE_URL);
+      setCategoriasSuperficie(response.data);
+    } catch (error) {
+      console.error('Error fetching categorias superficie:', error);
+      setErrorMessage('Error al cargar las categorías de superficie. Inténtalo de nuevo más tarde.');
+    }
+  };
+
   useEffect(() => {
-    if (editingProduct) {
+    if (editingProducto) {
       setFormData({
-        ...editingProduct,
-        producto_id: editingProduct.producto_id,
+        ...editingProducto,
         usuario_mod: '',
       });
     } else {
       resetForm();
     }
-  }, [editingProduct]);
+  }, [editingProducto]);
 
   const resetForm = () => {
     setFormData({
@@ -66,7 +77,7 @@ const Typography = () => {
       descripcion: '',
       precio: '',
       categoria_id: '',
-      producto_id: '',
+      categoria_superficie_producto_id: '',
       status: 'A',
       usuario_mod: '',
     });
@@ -81,23 +92,24 @@ const Typography = () => {
     e.preventDefault();
     setErrorMessage('');
     try {
-      if (editingProduct) {
+      if (editingProducto) {
         await axios.put(`${API_URL}/${formData.producto_id}`, formData);
         setSuccessMessage('Producto actualizado exitosamente!');
       } else {
         await axios.post(API_URL, formData);
         setSuccessMessage('Producto guardado exitosamente!');
       }
-      fetchProducts();
-      setEditingProduct(null);
+      fetchProductos();
+      setEditingProducto(null);
       resetForm();
     } catch (error) {
       setErrorMessage('Error guardando el producto. Inténtalo de nuevo.');
+      console.error('Error details:', error.response ? error.response.data : error.message);
     }
   };
 
-  const handleEdit = (product) => {
-    setEditingProduct(product);
+  const handleEdit = (producto) => {
+    setEditingProducto(producto);
   };
 
   useEffect(() => {
@@ -120,10 +132,12 @@ const Typography = () => {
 
   return (
     <div className="container">
-      <h2 className="text-center font-weight-bold my-4">GESTIÓN DE PRODUCTOS</h2>
+      <h2 className="text-center font-weight-bold my-4">
+        GESTIÓN DE PRODUCTOS
+      </h2>
 
       <form onSubmit={handleSubmit} className="widget-body">
-        <legend><strong>Formulario de Producto</strong></legend>
+        <legend><strong>Formulario de Productos</strong></legend>
         <Table responsive>
           <tbody>
             <tr>
@@ -157,22 +171,18 @@ const Typography = () => {
               </td>
             </tr>
             <tr>
-              <td><label htmlFor="precio">Precio ($)</label></td>
+              <td><label htmlFor="precio">Precio</label></td>
               <td>
-                <div className="input-group">
-                  <span className="input-group-text">$</span>
-                  <input
-                    id="precio"
-                    name="precio"
-                    value={formData.precio}
-                    onChange={handleChange}
-                    placeholder="Precio del producto"
-                    type="number"
-                    className="form-control"
-                    required
-                  />
-                  <span className="input-group-text">.00</span>
-                </div>
+                <input
+                  id="precio"
+                  name="precio"
+                  value={formData.precio}
+                  onChange={handleChange}
+                  placeholder="Precio del producto"
+                  type="number"
+                  className="form-control"
+                  required
+                />
               </td>
             </tr>
             <tr>
@@ -186,10 +196,30 @@ const Typography = () => {
                   className="form-control"
                   required
                 >
-                  <option value="" disabled>Selecciona una categoría</option>
-                  {categories.map((category) => (
-                    <option key={category.categoria_id} value={category.categoria_id}>
-                      {category.nombre_categoria}
+                  <option value="">Selecciona una categoría</option>
+                  {categorias.map((categoria) => (
+                    <option key={categoria.categoria_id} value={categoria.categoria_id}>
+                      {categoria.nombre_categoria} {/* Asegúrate de que este campo sea correcto */}
+                    </option>
+                  ))}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td><label htmlFor="categoria_superficie_producto_id">Categoría de Superficie</label></td>
+              <td>
+                <select
+                  id="categoria_superficie_producto_id"
+                  name="categoria_superficie_producto_id"
+                  value={formData.categoria_superficie_producto_id}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                >
+                  <option value="">Selecciona una categoría de área</option>
+                  {categoriasSuperficie.map((categoriaSuperficie) => (
+                    <option key={categoriaSuperficie.categoria_superficie_producto_id} value={categoriaSuperficie.categoria_superficie_producto_id}>
+                      {categoriaSuperficie.superficie_nombre}
                     </option>
                   ))}
                 </select>
@@ -211,36 +241,35 @@ const Typography = () => {
                 </select>
               </td>
             </tr>
-            {editingProduct && (
-  <tr>
-    <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
-    <td>
-      <select
-        id="usuario_mod"
-        name="usuario_mod"
-        value={formData.usuario_mod}
-        onChange={handleChange}
-        className="form-control"
-        required
-      >
-        <option value="">Selecciona un usuario</option>
-        <option value="Natalia Martinez">Natalia Martinez</option>
-        <option value="Michael Guzman">Michael Guzman</option>
-        <option value="Fernando Olvera">Fernando Olvera</option>
-      </select>
-    </td>
-  </tr>
-)}
-
+            {editingProducto && (
+              <tr>
+                <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
+                <td>
+                  <select
+                    id="usuario_mod"
+                    name="usuario_mod"
+                    value={formData.usuario_mod}
+                    onChange={handleChange}
+                    className="form-control"
+                    required
+                  >
+                    <option value="">Selecciona un usuario</option>
+                    <option value="Natalia Martinez">Natalia Martinez</option>
+                    <option value="Michael Guzman">Michael Guzman</option>
+                    <option value="Fernando Olvera">Fernando Olvera</option>
+                  </select>
+                </td>
+              </tr>
+            )}
           </tbody>
         </Table>
         <div className="form-action bg-transparent ps-0 row mb-3">
-          <div className="col-12">
+          <div className="col-md-12">
             <button type="submit" className="me-4 btn btn-warning">
-              {editingProduct ? 'Actualizar' : 'Agregar'}
+              {editingProducto ? 'Actualizar' : 'Agregar'}
             </button>
-            {editingProduct && (
-              <button type="button" className="btn btn-default" onClick={() => setEditingProduct(null)}>
+            {editingProducto && (
+              <button type="button" className="btn btn-default" onClick={() => setEditingProducto(null)}>
                 Cancelar
               </button>
             )}
@@ -248,12 +277,20 @@ const Typography = () => {
         </div>
 
         {successMessage && (
-          <div className="alert alert-success fade show" role="alert">
+          <div
+            className="alert alert-success fade show"
+            role="alert"
+            style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000 }}
+          >
             {successMessage}
           </div>
         )}
         {errorMessage && (
-          <div className="alert alert-danger fade show" role="alert">
+          <div
+            className="alert alert-danger fade show"
+            role="alert"
+            style={{ position: 'absolute', top: '70px', right: '20px', zIndex: 1000 }}
+          >
             {errorMessage}
           </div>
         )}
@@ -262,7 +299,7 @@ const Typography = () => {
       <Widget
         title={
           <h5>
-            Productos <span className="fw-semi-bold">Limpieza</span>
+            Productos <span className="fw-semi-bold">Registrados</span>
           </h5>
         }
         settings
@@ -274,23 +311,27 @@ const Typography = () => {
               <th>Nombre</th>
               <th>Descripción</th>
               <th>Precio</th>
+              <th>Categoría</th>
+              <th>Categoría Area</th>
               <th>Status</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product.producto_id}>
-                <td>{product.nombre}</td>
-                <td>{product.descripcion}</td>
-                <td>${product.precio}</td>
+            {productos.map((producto) => (
+              <tr key={producto.producto_id}>
+                <td>{producto.nombre}</td>
+                <td>{producto.descripcion}</td>
+                <td>{producto.precio}</td>
+                <td>{categorias.find(c => c.categoria_id === producto.categoria_id)?.nombre_categoria}</td>
+                <td>{categoriasSuperficie.find(cs => cs.categoria_superficie_producto_id === producto.categoria_superficie_producto_id)?.superficie_nombre}</td>
                 <td style={{ display: 'flex', justifyContent: 'center' }}>
-                  {product.status === 'A' ? (
-                    <span className="px-2 btn btn-success btn-xs w-100">
+                  {producto.status === 'A' ? (
+                    <span className="px-2 btn btn-success btn-xs" style={{ flex: 1 }}>
                       Activo
                     </span>
                   ) : (
-                    <span className="px-2 btn btn-danger btn-xs w-100">
+                    <span className="px-2 btn btn-danger btn-xs" style={{ flex: 1 }}>
                       Inactivo
                     </span>
                   )}
@@ -299,7 +340,7 @@ const Typography = () => {
                   <button
                     type="button"
                     className="btn btn-primary btn-xs w-100"
-                    onClick={() => handleEdit(product)}
+                    onClick={() => handleEdit(producto)}
                   >
                     <span className="d-none d-md-inline-block">Editar</span>
                     <span className="d-md-none"><i className="la la-edit"></i></span>
@@ -314,4 +355,4 @@ const Typography = () => {
   );
 };
 
-export default Typography;
+export default Producto;
