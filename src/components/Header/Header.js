@@ -20,7 +20,6 @@ import {
   ButtonGroup,
   Button,
 } from "reactstrap";
-import Notifications from "../Notifications";
 import PowerIcon from "../Icons/HeaderIcons/PowerIcon";
 import BellIcon from "../Icons/HeaderIcons/BellIcon";
 import SettingsIcon from "../Icons/HeaderIcons/SettingsIcon";

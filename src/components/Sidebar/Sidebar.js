@@ -90,9 +90,11 @@ class Sidebar extends React.Component {
                     this.element = nav;
                 }}
             >
-                <header className={s.logo}>
-                    <a href="">Hogar <span className="fw-bold">y Limpieza</span></a>
-                </header>
+              <header className={s.logo}>
+  <button className="link-button" onClick={() => {/* lógica de navegación */}}>
+    Hogar <span className="fw-bold">y Limpieza</span>
+  </button>
+</header>
                 
                 {/* Selector de rol */}
                 <select  className={s.roleSelect}  onChange={this.handleRoleChange} value={rol}>
@@ -127,7 +129,7 @@ class Sidebar extends React.Component {
                             <LinksGroup
                                 onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
                                 activeItem={this.props.activeItem}
-                                header="Categoria"
+                                header="Categoria" 
                                 isHeader
                                 iconName={<TablesIcon className={s.menuIcon} />}
                                 link="/app/tables"
@@ -136,7 +138,7 @@ class Sidebar extends React.Component {
                             <LinksGroup
                                 onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
                                 activeItem={this.props.activeItem}
-                                header="Categoria Superficie"
+                                header="Categoria Área"
                                 isHeader
                                 iconName={<SuperIcon className={s.menuIcon} />}
                                 link="/app/super"

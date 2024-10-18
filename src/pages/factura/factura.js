@@ -172,22 +172,26 @@ const Facturacion = () => {
               </td>
             </tr>
             {editingFactura && (
-              <tr>
-                <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
-                <td>
-                  <input
-                    id="usuario_mod"
-                    name="usuario_mod"
-                    value={formData.usuario_mod}
-                    onChange={handleChange}
-                    placeholder="Nombre del usuario"
-                    type="text"
-                    className="form-control"
-                    required
-                  />
-                </td>
-              </tr>
-            )}
+  <tr>
+    <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
+    <td>
+      <select
+        id="usuario_mod"
+        name="usuario_mod"
+        value={formData.usuario_mod}
+        onChange={handleChange}
+        className="form-control"
+        required
+      >
+        <option value="">Selecciona un usuario</option>
+        <option value="Natalia Martinez">Natalia Martinez</option>
+        <option value="Michael Guzman">Michael Guzman</option>
+        <option value="Fernando Olvera">Fernando Olvera</option>
+      </select>
+    </td>
+  </tr>
+)}
+
           </tbody>
         </Table>
         <div className="form-action bg-transparent ps-0 row mb-3">

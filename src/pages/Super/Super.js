@@ -104,11 +104,11 @@ const CategoriaSuperficie = () => {
   return (
     <div className="container">
       <h2 className="text-center font-weight-bold my-4">
-        GESTIÓN DE CATEGORÍAS DE SUPERFICIE
+        GESTIÓN DE CATEGORÍAS DE ÁREAS
       </h2>
 
       <form onSubmit={handleSubmit} className="widget-body">
-        <legend><strong>Formulario de Superficie</strong></legend>
+        <legend><strong>Formulario de Áreas</strong></legend>
         <Table responsive>
           <tbody>
             <tr>
@@ -119,7 +119,7 @@ const CategoriaSuperficie = () => {
                   name="superficie_nombre"
                   value={formData.superficie_nombre}
                   onChange={handleChange}
-                  placeholder="Nombre de la superficie"
+                  placeholder="Nombre del área"
                   type="text"
                   className="form-control"
                   required
@@ -134,7 +134,7 @@ const CategoriaSuperficie = () => {
                   name="superficie_descripcion"
                   value={formData.superficie_descripcion}
                   onChange={handleChange}
-                  placeholder="Descripción de la superficie"
+                  placeholder="Descripción del área"
                   type="text"
                   className="form-control"
                   required
@@ -158,22 +158,26 @@ const CategoriaSuperficie = () => {
               </td>
             </tr>
             {editingSuperficie && (
-              <tr>
-                <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
-                <td>
-                  <input
-                    id="usuario_mod"
-                    name="usuario_mod"
-                    value={formData.usuario_mod}
-                    onChange={handleChange}
-                    placeholder="Nombre del usuario"
-                    type="text"
-                    className="form-control"
-                    required
-                  />
-                </td>
-              </tr>
-            )}
+  <tr>
+    <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
+    <td>
+      <select
+        id="usuario_mod"
+        name="usuario_mod"
+        value={formData.usuario_mod}
+        onChange={handleChange}
+        className="form-control"
+        required
+      >
+        <option value="">Selecciona un usuario</option>
+        <option value="Natalia Martinez">Natalia Martinez</option>
+        <option value="Michael Guzman">Michael Guzman</option>
+        <option value="Fernando Olvera">Fernando Olvera</option>
+      </select>
+    </td>
+  </tr>
+)}
+
           </tbody>
         </Table>
         <div className="form-action bg-transparent ps-0 row mb-3">
@@ -212,7 +216,7 @@ const CategoriaSuperficie = () => {
       <Widget
         title={
           <h5>
-            Categorías de Superficie <span className="fw-semi-bold">Limpieza</span>
+            Categorías del Área <span className="fw-semi-bold">Limpieza</span>
           </h5>
         }
         settings

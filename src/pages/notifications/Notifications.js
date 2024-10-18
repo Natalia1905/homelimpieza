@@ -185,7 +185,7 @@ const Inventario = () => {
                   id="cantidad"
                   name="cantidad"
                   value={formData.cantidad}
-                  placeholder="Cantidad"
+                  placeholder="cantidad"
                   onChange={handleChange}
                   type="number"
                   className="form-control"
@@ -224,22 +224,25 @@ const Inventario = () => {
               </td>
             </tr>
             {editingInventario && (
-              <tr>
-                <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
-                <td>
-                  <input
-                    id="usuario_mod"
-                    name="usuario_mod"
-                    value={formData.usuario_mod}
-                    onChange={handleChange}
-                    placeholder="Nombre del usuario"
-                    type="text"
-                    className="form-control"
-                    required
-                  />
-                </td>
-              </tr>
-            )}
+  <tr>
+    <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
+    <td>
+      <select
+        id="usuario_mod"
+        name="usuario_mod"
+        value={formData.usuario_mod}
+        onChange={handleChange}
+        className="form-control"
+        required
+      >
+        <option value="">Selecciona un usuario</option>
+        <option value="Natalia Martinez">Natalia Martinez</option>
+        <option value="Michael Guzman">Michael Guzman</option>
+        <option value="Fernando Olvera">Fernando Olvera</option>
+      </select>
+    </td>
+  </tr>
+)}
           </tbody>
         </Table>
         <div className="form-action bg-transparent ps-0 row mb-3">
@@ -248,7 +251,7 @@ const Inventario = () => {
               {editingInventario ? 'Actualizar' : 'Agregar'}
             </button>
             {editingInventario && (
-              <button type="button" className="btn btn-default" onClick={() => setEditingInventario(null)}>
+              <button type="button" className="btn btn-default " onClick={() => setEditingInventario(null)}>
                 Cancelar
               </button>
             )}
@@ -256,7 +259,7 @@ const Inventario = () => {
         </div>
 
         {successMessage && (
-          <div className="alert alert-success fade show" role="alert">
+          <div className="alert alert-success fade show " role="alert">
             {successMessage}
           </div>
         )}
@@ -293,11 +296,11 @@ const Inventario = () => {
                   <td>{inventario.cantidad}</td>
                   <td className="text-center">
                     {inventario.status === 'A' ? (
-                      <span className="px-2 btn btn-success btn-xs">
+                      <span className="px-2 btn btn-success btn-xs w-100">
                         Activo
                       </span>
                     ) : (
-                      <span className="px-2 btn btn-danger btn-xs">
+                      <span className="px-2 btn btn-danger btn-xs w-100">
                         Inactivo
                       </span>
                     )}
@@ -336,11 +339,11 @@ const Inventario = () => {
                   <td>{inventario.cantidad}</td>
                   <td className="text-center">
                     {inventario.status === 'A' ? (
-                      <span className="px-2 btn btn-success btn-xs">
+                      <span className="px-2 btn btn-success btn-xs w-100">
                         Activo
                       </span>
                     ) : (
-                      <span className="px-2 btn btn-danger btn-xs">
+                      <span className="px-2 btn btn-danger btn-xs w-100">
                         Inactivo
                       </span>
                     )}
