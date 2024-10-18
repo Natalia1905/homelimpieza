@@ -16,7 +16,7 @@ const FacturaDetalle = () => {
     factura_id: '',
     producto_id: '',
     cantidad: '',
-    subtotal: 0,
+    subtotal: '',
     status: 'A',
     usuario_mod: '',
   });
@@ -42,7 +42,9 @@ const FacturaDetalle = () => {
   const fetchProductos = async () => {
     try {
       const response = await axios.get(PRODUCTO_URL);
-      setProductos(response.data);
+      // Filtrar solo productos activos
+      const productosActivos = response.data.filter(producto => producto.status === 'A');
+      setProductos(productosActivos);
     } catch (error) {
       console.error('Error fetching productos:', error);
       setErrorMessage('Error al cargar los productos. Inténtalo de nuevo más tarde.');
@@ -52,7 +54,9 @@ const FacturaDetalle = () => {
   const fetchFacturas = async () => {
     try {
       const response = await axios.get(FACTURA_URL);
-      setFacturas(response.data);
+      // Filtrar solo facturas activas
+      const facturasActivas = response.data.filter(factura => factura.status === 'A');
+      setFacturas(facturasActivas);
     } catch (error) {
       console.error('Error fetching facturas:', error);
       setErrorMessage('Error al cargar las facturas. Inténtalo de nuevo más tarde.');
@@ -63,7 +67,7 @@ const FacturaDetalle = () => {
     if (editingFacturaDetalle) {
       setFormData({
         ...editingFacturaDetalle,
-        usuario_mod: '',
+        usuario_mod: '', // Clear this field on edit
       });
     } else {
       resetForm();
@@ -75,27 +79,15 @@ const FacturaDetalle = () => {
       factura_id: '',
       producto_id: '',
       cantidad: '',
-      subtotal: 0,
+      subtotal: '',
       status: 'A',
       usuario_mod: '',
     });
   };
 
-  const handleChange = async (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-
-    if (name === 'cantidad' || name === 'producto_id') {
-      const producto = productos.find(p => p.producto_id === formData.producto_id) || {};
-      const precio = producto.precio || 0;
-      const cantidad = parseInt(formData.cantidad) || 0;
-      const subtotal = precio * cantidad;
-
-      setFormData(prevData => ({
-        ...prevData,
-        subtotal,
-      }));
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -133,33 +125,6 @@ const FacturaDetalle = () => {
   const handleEdit = (facturaDetalle) => {
     setEditingFacturaDetalle(facturaDetalle);
   };
-
-  const getFacturaTotales = () => {
-    const totals = {};
-    
-    facturaDetalles.forEach(detalle => {
-      const facturaId = detalle.factura_id;
-      const subtotal = detalle.total || detalle.subtotal; // Asegúrate de que 'total' está presente
-
-      if (!totals[facturaId]) {
-        const factura = facturas.find(f => f.factura_id === facturaId);
-        totals[facturaId] = {
-          total: 0,
-          cliente: factura ? factura.cliente : 'Desconocido',
-        };
-      }
-      
-      totals[facturaId].total += subtotal; // Suma el subtotal al total existente
-    });
-
-    return Object.keys(totals).map(facturaId => ({
-      facturaId,
-      total: totals[facturaId].total,
-      cliente: totals[facturaId].cliente,
-    }));
-  };
-
-  const facturaTotales = getFacturaTotales();
 
   useEffect(() => {
     if (successMessage) {
@@ -206,13 +171,11 @@ const FacturaDetalle = () => {
                   required
                 >
                   <option value="" disabled>Selecciona una factura</option>
-                  {facturas
-                    .filter(factura => factura.status === 'A')
-                    .map((factura) => (
-                      <option key={factura.factura_id} value={factura.factura_id}>
-                        {factura.cliente} - {factura.factura_id}
-                      </option>
-                    ))}
+                  {facturas.map((factura) => (
+                    <option key={factura.factura_id} value={factura.factura_id}>
+                      {factura.cliente} - {factura.factura_id}
+                    </option>
+                  ))}
                 </select>
               </td>
             </tr>
@@ -228,13 +191,11 @@ const FacturaDetalle = () => {
                   required
                 >
                   <option value="" disabled>Selecciona un producto</option>
-                  {productos
-                    .filter(producto => producto.status === 'A')
-                    .map((producto) => (
-                      <option key={producto.producto_id} value={producto.producto_id}>
-                        {producto.nombre}
-                      </option>
-                    ))}
+                  {productos.map((producto) => (
+                    <option key={producto.producto_id} value={producto.producto_id}>
+                      {producto.nombre}
+                    </option>
+                  ))}
                 </select>
               </td>
             </tr>
@@ -247,6 +208,21 @@ const FacturaDetalle = () => {
                   value={formData.cantidad}
                   onChange={handleChange}
                   placeholder="Cantidad"
+                  type="number"
+                  className="form-control"
+                  required
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><label htmlFor="subtotal">Subtotal ($)</label></td>
+              <td>
+                <input
+                  id="subtotal"
+                  name="subtotal"
+                  value={formData.subtotal}
+                  onChange={handleChange}
+                  placeholder="Subtotal"
                   type="number"
                   className="form-control"
                   required
@@ -343,7 +319,7 @@ const FacturaDetalle = () => {
           </thead>
           <tbody>
             {facturaDetalles.map((detalle) => {
-              const factura = facturas.find(f => f.factura_id === detalle.factura_id);
+              const factura = facturas.find(f => f.factura_id === detalle.factura_id,);
               const producto = productos.find(p => p.producto_id === detalle.producto_id);
               return (
                 <tr key={detalle.factura_detalle_id}>
@@ -375,32 +351,6 @@ const FacturaDetalle = () => {
                 </tr>
               );
             })}
-          </tbody>
-        </Table>
-      </Widget>
-
-      {/* Nueva tabla para mostrar FACTURA y TOTAL */}
-      <Widget
-        title={
-          <h5>
-            Totales de Factura
-          </h5>
-        }
-      >
-        <Table className="table-bordered table-lg mt-lg mb-0">
-          <thead className="text-uppercase">
-            <tr>
-              <th>Factura</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {facturaTotales.map(({ facturaId, total, cliente }) => (
-              <tr key={facturaId}>
-                <td>{`${cliente} - ${facturaId}`}</td>
-                <td>${typeof total === 'number' ? total.toFixed(2) : '0.00'}</td>
-              </tr>
-            ))}
           </tbody>
         </Table>
       </Widget>

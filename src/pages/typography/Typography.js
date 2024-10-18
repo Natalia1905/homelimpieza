@@ -21,7 +21,6 @@ const Typography = () => {
   });
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [formVisible, setFormVisible] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -41,7 +40,9 @@ const Typography = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(CATEGORIAS_URL);
+      // Filtramos solo las categorías activas
       const activeCategories = response.data.filter(category => category.status === 'A');
+      console.log('Categorías activas obtenidas:', activeCategories);
       setCategories(activeCategories);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -92,7 +93,6 @@ const Typography = () => {
       fetchProducts();
       setEditingProduct(null);
       resetForm();
-      setFormVisible(false);
     } catch (error) {
       setErrorMessage('Error guardando el producto. Inténtalo de nuevo.');
       console.error('Error details:', error.response ? error.response.data : error.message);
@@ -144,155 +144,153 @@ const Typography = () => {
         GESTIÓN DE PRODUCTOS
       </h2>
 
-      <li className="LinksGroup_headerLink__3fPmk">
-        <button
-          className="LinksGroup_accordionToggle__20prd btn btn-warning"
-          onClick={() => setFormVisible(!formVisible)}
-          style={{ padding: '10px', width: '100%' }}
-        >
-          Formulario de Producto   
-          <b className={`fa fa-angle-${formVisible ? 'down' : 'right'} LinksGroup_caret__25oSl`}></b>
-        </button>
-        {formVisible && (
-          <div className="LinksGroup_panel__1W7_K collapse show">
-            <form onSubmit={handleSubmit} className="widget-body">
-              <legend><strong>Detalles del Producto</strong></legend>
-              <Table>
-                <tbody>
-                  <tr>
-                    <td><label htmlFor="nombre">Nombre</label></td>
-                    <td>
-                      <input
-                        id="nombre"
-                        name="nombre"
-                        value={formData.nombre}
-                        onChange={handleChange}
-                        placeholder="Nombre del producto"
-                        type="text"
-                        className="form-control"
-                        required
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><label htmlFor="descripcion">Descripción</label></td>
-                    <td>
-                      <input
-                        id="descripcion"
-                        name="descripcion"
-                        value={formData.descripcion}
-                        onChange={handleChange}
-                        placeholder="Descripción del producto"
-                        type="text"
-                        className="form-control"
-                        required
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><label htmlFor="precio">Precio ($)</label></td>
-                    <td>
-                      <div className="input-group">
-                        <span className="input-group-text">$</span>
-                        <input
-                          id="precio"
-                          name="precio"
-                          value={formData.precio}
-                          onChange={handleChange}
-                          placeholder="Precio del producto"
-                          type="number"
-                          className="form-control-16 form-control"
-                          required
-                        />
-                        <span className="input-group-text">.00</span>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><label htmlFor="categoria_id">Categoría</label></td>
-                    <td>
-                      <select
-                        id="categoria_id"
-                        name="categoria_id"
-                        value={formData.categoria_id}
-                        onChange={handleChange}
-                        className="form-control"
-                        required
-                      >
-                        <option value="" disabled>Selecciona una categoría</option>
-                        {categories.map((category) => (
-                          <option key={category.categoria_id} value={category.categoria_id}>
-                            {category.nombre_categoria}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><label htmlFor="status">Estado</label></td>
-                    <td>
-                      <select
-                        id="status"
-                        name="status"
-                        value={formData.status}
-                        onChange={handleChange}
-                        className="form-control"
-                        required
-                      >
-                        <option value="A">Activo</option>
-                        <option value="I">Inactivo</option>
-                      </select>
-                    </td>
-                  </tr>
-                  {editingProduct && (
-                    <tr>
-                      <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
-                      <td>
-                        <input
-                          id="usuario_mod"
-                          name="usuario_mod"
-                          value={formData.usuario_mod}
-                          onChange={handleChange}
-                          placeholder="Nombre del usuario"
-                          type="text"
-                          className="form-control"
-                          required
-                        />
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </Table>
-              <div className="form-action bg-transparent ps-0 row mb-3">
-                <div className="col-md-12">
-                  <button type="submit" className="me-4 btn btn-primary">
-                    {editingProduct ? 'Actualizar' : 'Agregar'}
-                  </button>
-                  {editingProduct && (
-                    <button type="button" className="btn btn-default" onClick={() => setEditingProduct(null)}>
-                      Cancelar
-                    </button>
-                  )}
+      <form onSubmit={handleSubmit} className="widget-body">
+        <legend><strong>Formulario de Producto</strong></legend>
+        <Table>
+          <tbody>
+            <tr>
+              <td><label htmlFor="nombre">Nombre</label></td>
+              <td>
+                <input
+                  id="nombre"
+                  name="nombre"
+                  value={formData.nombre}
+                  onChange={handleChange}
+                  placeholder="Nombre del producto"
+                  type="text"
+                  className="form-control"
+                  required
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><label htmlFor="descripcion">Descripción</label></td>
+              <td>
+                <input
+                  id="descripcion"
+                  name="descripcion"
+                  value={formData.descripcion}
+                  onChange={handleChange}
+                  placeholder="Descripción del producto"
+                  type="text"
+                  className="form-control"
+                  required
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><label htmlFor="precio">Precio ($)</label></td>
+              <td>
+                <div className="input-group">
+                  <span className="input-group-text">$</span>
+                  <input
+                    id="precio"
+                    name="precio"
+                    value={formData.precio}
+                    onChange={handleChange}
+                    placeholder="Precio del producto"
+                    type="number"
+                    className="form-control-16 form-control"
+                    required
+                  />
+                  <span className="input-group-text">.00</span>
                 </div>
-              </div>
-            </form>
+              </td>
+            </tr>
+            <tr>
+              <td><label htmlFor="categoria_id">Categoría</label></td>
+              <td>
+                <select
+                  id="categoria_id"
+                  name="categoria_id"
+                  value={formData.categoria_id}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                >
+                  <option value="" disabled>Selecciona una categoría</option>
+                  {categories.map((category) => (
+                    <option key={category.categoria_id} value={category.categoria_id}>
+                      {category.nombre_categoria}
+                    </option>
+                  ))}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td><label htmlFor="status">Estado</label></td>
+              <td>
+                <select
+                  id="status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                >
+                  <option value="A">Activo</option>
+                  <option value="I">Inactivo</option>
+                </select>
+              </td>
+            </tr>
+            {editingProduct && (
+              <tr>
+                <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
+                <td>
+                  <input
+                    id="usuario_mod"
+                    name="usuario_mod"
+                    value={formData.usuario_mod}
+                    onChange={handleChange}
+                    placeholder="Nombre del usuario"
+                    type="text"
+                    className="form-control"
+                    required
+                  />
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+        <div className="form-action bg-transparent ps-0 row mb-3">
+          <div className="col-md-12">
+            <button type="submit" className="me-4 btn btn-warning">
+              {editingProduct ? 'Actualizar' : 'Agregar'}
+            </button>
+            {editingProduct && (
+              <button type="button" className="btn btn-default" onClick={() => setEditingProduct(null)}>
+                Cancelar
+              </button>
+            )}
+          </div>
+        </div>
+
+        {successMessage && (
+          <div
+            className="alert alert-success fade show"
+            role="alert"
+            style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000 }}
+          >
+            {successMessage}
           </div>
         )}
-      </li>
-
-      {successMessage && (
-        <div className="alert alert-success fade show" role="alert" style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000 }}>
-          {successMessage}
-        </div>
-      )}
-      {errorMessage && (
-        <div className="alert alert-danger fade show" role="alert" style={{ position: 'absolute', top: '70px', right: '20px', zIndex: 1000 }}>
-          {errorMessage}
-        </div>
-      )}
+        {errorMessage && (
+          <div
+            className="alert alert-danger fade show"
+            role="alert"
+            style={{ position: 'absolute', top: '70px', right: '20px', zIndex: 1000 }}
+          >
+            {errorMessage}
+          </div>
+        )}
+      </form>
 
       <Widget
-        title={<h5>Productos <span className="fw-semi-bold">Limpieza</span></h5>}
+        title={
+          <h5>
+            Productos <span className="fw-semi-bold">Limpieza</span>
+          </h5>
+        }
         settings
         close
       >

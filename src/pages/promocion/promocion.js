@@ -253,7 +253,7 @@ const Promocion = () => {
         </Table>
         <div className="form-action bg-transparent ps-0 row mb-3">
           <div className="col-md-12">
-            <button type="submit" className="me-4 btn btn-primary">
+            <button type="submit" className="me-4 btn btn-warning">
               {editingPromocion ? 'Actualizar' : 'Agregar'}
             </button>
             {editingPromocion && (

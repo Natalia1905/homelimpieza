@@ -3,94 +3,97 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Table } from 'reactstrap';
 
-const API_URL = 'https://api-iv1i.onrender.com/compra_producto';
-const PROVEEDORES_URL = 'https://api-iv1i.onrender.com/proveedor';
-const PRODUCTOS_URL = 'https://api-iv1i.onrender.com/producto';
+const API_URL = 'https://api-iv1i.onrender.com/factura_detalle';
+const PRODUCTO_URL = 'https://api-iv1i.onrender.com/producto';
+const FACTURA_URL = 'https://api-iv1i.onrender.com/facturacion';
+const CATEGORIA_URL = 'https://api-iv1i.onrender.com/categoria_superficie_producto';
 
-const CompraProducto = () => {
-  const [compras, setCompras] = useState([]);
-  const [filteredCompras, setFilteredCompras] = useState([]);
-  const [proveedores, setProveedores] = useState([]);
+const FacturaDetalle = () => {
+  const [facturaDetalles, setFacturaDetalles] = useState([]);
   const [productos, setProductos] = useState([]);
-  const [editingCompra, setEditingCompra] = useState(null);
+  const [facturas, setFacturas] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [editingFacturaDetalle, setEditingFacturaDetalle] = useState(null);
   const [formData, setFormData] = useState({
-    proveedor_id: '',
+    factura_id: '',
     producto_id: '',
-    fecha: '',
-    monto: '',
-    descripcion: '',
-    compra_producto_id: '',
+    categoria_id: '',
+    cantidad: '',
+    subtotal: '',
     status: 'A',
     usuario_mod: '',
   });
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState('');
 
   useEffect(() => {
-    fetchCompras();
-    fetchProveedores();
+    fetchFacturaDetalles();
     fetchProductos();
+    fetchFacturas();
+    fetchCategorias();
   }, []);
 
-  const fetchCompras = async () => {
+  const fetchFacturaDetalles = async () => {
     try {
       const response = await axios.get(API_URL);
-      setCompras(response.data);
-      setFilteredCompras(response.data); // Inicialmente, muestra todas las compras
+      setFacturaDetalles(response.data);
     } catch (error) {
-      console.error('Error fetching compras:', error);
-      setErrorMessage('Error al cargar las compras. Inténtalo de nuevo más tarde.');
-    }
-  };
-
-  const fetchProveedores = async () => {
-    try {
-      const response = await axios.get(PROVEEDORES_URL);
-      const activos = response.data.filter(proveedor => proveedor.status === 'A');
-      setProveedores(activos);
-    } catch (error) {
-      console.error('Error fetching proveedores:', error);
-      setErrorMessage('Error al cargar los proveedores. Inténtalo de nuevo más tarde.');
+      console.error('Error fetching factura detalles:', error);
+      setErrorMessage('Error al cargar los detalles de la factura. Inténtalo de nuevo más tarde.');
     }
   };
 
   const fetchProductos = async () => {
     try {
-      const response = await axios.get(PRODUCTOS_URL);
-      const activos = response.data.filter(producto => producto.status === 'A');
-      setProductos(activos);
+      const response = await axios.get(PRODUCTO_URL);
+      const productosActivos = response.data.filter(producto => producto.status === 'A');
+      setProductos(productosActivos);
     } catch (error) {
       console.error('Error fetching productos:', error);
       setErrorMessage('Error al cargar los productos. Inténtalo de nuevo más tarde.');
     }
   };
 
+  const fetchFacturas = async () => {
+    try {
+      const response = await axios.get(FACTURA_URL);
+      const facturasActivas = response.data.filter(factura => factura.status === 'A');
+      setFacturas(facturasActivas);
+    } catch (error) {
+      console.error('Error fetching facturas:', error);
+      setErrorMessage('Error al cargar las facturas. Inténtalo de nuevo más tarde.');
+    }
+  };
+
+  const fetchCategorias = async () => {
+    try {
+      const response = await axios.get(CATEGORIA_URL);
+      const categoriasActivas = response.data.filter(categoria => categoria.status === 'A');
+      setCategorias(categoriasActivas);
+    } catch (error) {
+      console.error('Error fetching categorias:', error);
+      setErrorMessage('Error al cargar las categorías. Inténtalo de nuevo más tarde.');
+    }
+  };
+
   useEffect(() => {
-    if (editingCompra) {
+    if (editingFacturaDetalle) {
       setFormData({
-        proveedor_id: editingCompra.proveedor_id,
-        producto_id: editingCompra.producto_id,
-        fecha: new Date(editingCompra.fecha).toISOString().split('T')[0], // Formato YYYY-MM-DD
-        monto: editingCompra.monto,
-        descripcion: editingCompra.descripcion,
-        compra_producto_id: editingCompra.compra_producto_id,
-        status: editingCompra.status,
-        usuario_mod: '',
+        ...editingFacturaDetalle,
+        usuario_mod: '', // Clear this field on edit
       });
     } else {
       resetForm();
     }
-  }, [editingCompra]);
+  }, [editingFacturaDetalle]);
 
   const resetForm = () => {
     setFormData({
-      proveedor_id: '',
+      factura_id: '',
       producto_id: '',
-      fecha: '',
-      monto: '',
-      descripcion: '',
-      compra_producto_id: '',
+      categoria_id: '',
+      cantidad: '',
+      subtotal: '',
       status: 'A',
       usuario_mod: '',
     });
@@ -105,40 +108,24 @@ const CompraProducto = () => {
     e.preventDefault();
     setErrorMessage('');
     try {
-      if (editingCompra) {
-        await axios.put(`${API_URL}/${formData.compra_producto_id}`, formData);
-        setSuccessMessage('Compra actualizada exitosamente!');
+      if (editingFacturaDetalle) {
+        await axios.put(`${API_URL}/${formData.factura_detalle_id}`, formData);
+        setSuccessMessage('Detalle de factura actualizado exitosamente!');
       } else {
         await axios.post(API_URL, formData);
-        setSuccessMessage('Compra guardada exitosamente!');
+        setSuccessMessage('Detalle de factura guardado exitosamente!');
       }
-      fetchCompras();
-      setEditingCompra(null);
+      fetchFacturaDetalles();
+      setEditingFacturaDetalle(null);
       resetForm();
     } catch (error) {
-      setErrorMessage('Error guardando la compra. Inténtalo de nuevo.');
+      setErrorMessage('Error guardando el detalle de factura. Inténtalo de nuevo.');
       console.error('Error details:', error.response ? error.response.data : error.message);
     }
   };
 
-  const handleEdit = (compra) => {
-    setEditingCompra(compra);
-  };
-
-  const handleMonthChange = (e) => {
-    setSelectedMonth(e.target.value);
-  };
-
-  const filterByMonth = () => {
-    if (selectedMonth) {
-      const filtered = compras.filter(compra => {
-        const compraDate = new Date(compra.fecha);
-        return compraDate.getMonth() + 1 === parseInt(selectedMonth); // +1 porque getMonth() es 0-indexado
-      });
-      setFilteredCompras(filtered);
-    } else {
-      setFilteredCompras(compras);
-    }
+  const handleEdit = (facturaDetalle) => {
+    setEditingFacturaDetalle(facturaDetalle);
   };
 
   useEffect(() => {
@@ -167,28 +154,28 @@ const CompraProducto = () => {
         letterSpacing: '0.1em',
         margin: '20px 0'
       }}>
-        GESTIÓN DE COMPRAS
+        GESTIÓN DE DETALLES DE FACTURA
       </h2>
 
       <form onSubmit={handleSubmit} className="widget-body">
-        <legend><strong>Formulario de Compra</strong></legend>
+        <legend><strong>Formulario de Detalle de Factura</strong></legend>
         <Table>
           <tbody>
             <tr>
-              <td><label htmlFor="proveedor_id">Proveedor</label></td>
+              <td><label htmlFor="factura_id">Factura</label></td>
               <td>
                 <select
-                  id="proveedor_id"
-                  name="proveedor_id"
-                  value={formData.proveedor_id}
+                  id="factura_id"
+                  name="factura_id"
+                  value={formData.factura_id}
                   onChange={handleChange}
                   className="form-control"
                   required
                 >
-                  <option value="" disabled>Selecciona un proveedor</option>
-                  {proveedores.map((proveedor) => (
-                    <option key={proveedor.proveedor_id} value={proveedor.proveedor_id}>
-                      {proveedor.nombre_proveedor}
+                  <option value="" disabled>Selecciona una factura</option>
+                  {facturas.map((factura) => (
+                    <option key={factura.factura_id} value={factura.factura_id}>
+                      {factura.cliente} - {factura.factura_id}
                     </option>
                   ))}
                 </select>
@@ -215,28 +202,34 @@ const CompraProducto = () => {
               </td>
             </tr>
             <tr>
-              <td><label htmlFor="fecha">Fecha</label></td>
+              <td><label htmlFor="categoria_id">Categoría Superficie</label></td>
               <td>
-                <input
-                  id="fecha"
-                  name="fecha"
-                  value={formData.fecha}
+                <select
+                  id="categoria_id"
+                  name="categoria_id"
+                  value={formData.categoria_id}
                   onChange={handleChange}
-                  type="date"
                   className="form-control"
                   required
-                />
+                >
+                  <option value="" disabled>Selecciona una categoría</option>
+                  {categorias.map((categoria) => (
+                    <option key={categoria.categoria_id} value={categoria.categoria_id}>
+                      {categoria.nombre}
+                    </option>
+                  ))}
+                </select>
               </td>
             </tr>
             <tr>
-              <td><label htmlFor="monto">Monto ($)</label></td>
+              <td><label htmlFor="cantidad">Cantidad</label></td>
               <td>
                 <input
-                  id="monto"
-                  name="monto"
-                  value={formData.monto}
+                  id="cantidad"
+                  name="cantidad"
+                  value={formData.cantidad}
                   onChange={handleChange}
-                  placeholder="Monto de la compra"
+                  placeholder="Cantidad"
                   type="number"
                   className="form-control"
                   required
@@ -244,15 +237,15 @@ const CompraProducto = () => {
               </td>
             </tr>
             <tr>
-              <td><label htmlFor="descripcion">Descripción</label></td>
+              <td><label htmlFor="subtotal">Subtotal ($)</label></td>
               <td>
                 <input
-                  id="descripcion"
-                  name="descripcion"
-                  value={formData.descripcion}
+                  id="subtotal"
+                  name="subtotal"
+                  value={formData.subtotal}
                   onChange={handleChange}
-                  placeholder="Descripción de la compra"
-                  type="text"
+                  placeholder="Subtotal"
+                  type="number"
                   className="form-control"
                   required
                 />
@@ -274,7 +267,7 @@ const CompraProducto = () => {
                 </select>
               </td>
             </tr>
-            {editingCompra && (
+            {editingFacturaDetalle && (
               <tr>
                 <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
                 <td>
@@ -295,11 +288,11 @@ const CompraProducto = () => {
         </Table>
         <div className="form-action bg-transparent ps-0 row mb-3">
           <div className="col-md-12">
-            <button type="submit" className="me-4 btn btn-warning">
-              {editingCompra ? 'Actualizar' : 'Agregar'}
+            <button type="submit" className="me-4 btn btn-primary">
+              {editingFacturaDetalle ? 'Actualizar' : 'Agregar'}
             </button>
-            {editingCompra && (
-              <button type="button" className="btn btn-default" onClick={() => setEditingCompra(null)}>
+            {editingFacturaDetalle && (
+              <button type="button" className="btn btn-default" onClick={() => setEditingFacturaDetalle(null)}>
                 Cancelar
               </button>
             )}
@@ -326,21 +319,10 @@ const CompraProducto = () => {
         )}
       </form>
 
-      <div style={{ margin: '20px 0' }}>
-        <label htmlFor="month">Filtrar por mes:</label>
-        <select id="month" value={selectedMonth} onChange={handleMonthChange} className="form-control" style={{ width: '200px', display: 'inline-block', marginLeft: '10px' }}>
-          <option value="">Selecciona un mes</option>
-          {Array.from({ length: 12 }, (_, index) => (
-            <option key={index} value={index + 1}>{new Date(0, index).toLocaleString('default', { month: 'long' })}</option>
-          ))}
-        </select>
-        <button onClick={filterByMonth} className="btn btn-primary" style={{ marginLeft: '10px' }}>Filtrar</button>
-      </div>
-
       <Widget
         title={
           <h5>
-            Compras <span className="fw-semi-bold">Realizadas</span>
+            Detalles de Factura <span className="fw-semi-bold">Limpieza</span>
           </h5>
         }
         settings
@@ -349,27 +331,29 @@ const CompraProducto = () => {
         <Table className="table-bordered table-lg mt-lg mb-0">
           <thead className="text-uppercase">
             <tr>
-              <th>Proveedor</th>
+              <th>Factura</th>
               <th>Producto</th>
-              <th>Fecha</th>
-              <th>Monto</th>
+              <th>Categoría</th>
+              <th>Cantidad</th>
+              <th>Subtotal</th>
               <th>Status</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {filteredCompras.map((compra) => {
-              const proveedor = proveedores.find(p => p.proveedor_id === compra.proveedor_id);
-              const producto = productos.find(p => p.producto_id === compra.producto_id);
-
+            {facturaDetalles.map((detalle) => {
+              const factura = facturas.find(f => f.factura_id === detalle.factura_id);
+              const producto = productos.find(p => p.producto_id === detalle.producto_id);
+              const categoria = categorias.find(c => c.categoria_id === detalle.categoria_id);
               return (
-                <tr key={compra.compra_producto_id}>
-                  <td>{proveedor ? proveedor.nombre_proveedor : 'Proveedor no encontrado'}</td>
-                  <td>{producto ? producto.nombre : 'Producto no encontrado'}</td>
-                  <td>{new Date(compra.fecha).toLocaleDateString()}</td>
-                  <td>${compra.monto}</td>
+                <tr key={detalle.factura_detalle_id}>
+                  <td>{factura ? `${factura.cliente} - ${factura.factura_id}` : detalle.factura_id}</td>
+                  <td>{producto ? producto.nombre : detalle.producto_id}</td>
+                  <td>{categoria ? categoria.nombre : detalle.categoria_id}</td>
+                  <td>{detalle.cantidad}</td>
+                  <td>${detalle.subtotal.toFixed(2)}</td>
                   <td style={{ display: 'flex', justifyContent: 'center' }}>
-                    {compra.status === 'A' ? (
+                    {detalle.status === 'A' ? (
                       <span className="px-2 btn btn-success btn-xs" style={{ flex: 1 }}>
                         Activo
                       </span>
@@ -383,7 +367,7 @@ const CompraProducto = () => {
                     <button
                       type="button"
                       className="btn btn-primary btn-xs w-100"
-                      onClick={() => handleEdit(compra)}
+                      onClick={() => handleEdit(detalle)}
                     >
                       <span className="d-none d-md-inline-block">Editar</span>
                       <span className="d-md-none"><i className="la la-edit"></i></span>
@@ -399,4 +383,4 @@ const CompraProducto = () => {
   );
 };
 
-export default CompraProducto;
+export default FacturaDetalle;

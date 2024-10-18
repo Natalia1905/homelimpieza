@@ -10,6 +10,7 @@ const Categorias = () => {
   const [editingCategory, setEditingCategory] = useState(null);
   const [formData, setFormData] = useState({
     nombre_categoria: '',
+    descripcion: '', // Nueva columna
     fecha_creac: '',
     status: 'A',
     usuario_mod: '',
@@ -44,6 +45,7 @@ const Categorias = () => {
   const resetForm = () => {
     setFormData({
       nombre_categoria: '',
+      descripcion: '', // Reiniciar descripción
       fecha_creac: '',
       status: 'A',
       usuario_mod: '',
@@ -105,6 +107,20 @@ const Categorias = () => {
               </td>
             </tr>
             <tr>
+              <td><label htmlFor="descripcion">Descripción</label></td>
+              <td>
+                <input
+                  id="descripcion"
+                  name="descripcion"
+                  value={formData.descripcion}
+                  onChange={handleChange}
+                  placeholder="Descripción de la categoría"
+                  type="text"
+                  className="form-control"
+                />
+              </td>
+            </tr>
+            <tr>
               <td><label htmlFor="status">Estado</label></td>
               <td>
                 <select
@@ -141,7 +157,7 @@ const Categorias = () => {
         </Table>
         <div className="form-action bg-transparent ps-0 row mb-3">
           <div className="col-md-12">
-            <button type="submit" className="me-4 btn btn-primary">
+            <button type="submit" className="me-4 btn btn-warning">
               {editingCategory ? 'Actualizar' : 'Agregar'}
             </button>
             {editingCategory && (
@@ -173,38 +189,39 @@ const Categorias = () => {
           <thead className="text-uppercase">
             <tr>
               <th>Nombre</th>
+              <th>Descripción</th> {/* Nueva columna */}
               <th>Status</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-  {categories.map((category) => (
-    <tr key={category.categoria_id}>
-      <td>{category.nombre_categoria}</td>
-      <td style={{ textAlign: 'center' }}>
-        {category.status === 'A' ? (
-          <span className="px-2 btn btn-success btn-xs" style={{ display: 'block', width: '100%' }}>
-            Activo
-          </span>
-        ) : (
-          <span className="px-2 btn btn-danger btn-xs" style={{ display: 'block', width: '100%' }}>
-            Inactivo
-          </span>
-        )}
-      </td>
-      <td>
-        <button
-          type="button"
-          className="btn btn-primary btn-xs w-100"
-          onClick={() => handleEdit(category)}
-        >
-          Editar
-        </button>
-      </td>
-    </tr>
-  ))}
-</tbody>
-
+            {categories.map((category) => (
+              <tr key={category.categoria_id}>
+                <td>{category.nombre_categoria}</td>
+                <td>{category.descripcion}</td> {/* Mostrar descripción */}
+                <td style={{ textAlign: 'center' }}>
+                  {category.status === 'A' ? (
+                    <span className="px-2 btn btn-success btn-xs" style={{ display: 'block', width: '100%' }}>
+                      Activo
+                    </span>
+                  ) : (
+                    <span className="px-2 btn btn-danger btn-xs" style={{ display: 'block', width: '100%' }}>
+                      Inactivo
+                    </span>
+                  )}
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-xs w-100"
+                    onClick={() => handleEdit(category)}
+                  >
+                    Editar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </Table>
       </Widget>
     </div>

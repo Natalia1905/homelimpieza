@@ -19,6 +19,7 @@ import PromoProductoIcon from '../Icons/SidebarIcons/PromoProductoIcon';
 import ProveedorIcon from '../Icons/SidebarIcons/ProveedorIcon';
 import FacturaIcon from '../Icons/SidebarIcons/FacturaIcon';
 import FacturaDetalleIcon from '../Icons/SidebarIcons/FacturaDetalleIcon';
+import SuperIcon from '../Icons/SidebarIcons/SuperIcon';
 
 
 
@@ -113,6 +114,15 @@ class Sidebar extends React.Component {
                         iconName={<TablesIcon className={s.menuIcon} />}
                         link="/app/tables"
                         index="tables"
+                    />
+                    <LinksGroup
+                        onActiveSidebarItemChange={t => this.props.dispatch(changeActiveSidebarItem(t))}
+                        activeItem={this.props.activeItem}
+                        header="Categoria Superficie"
+                        isHeader
+                        iconName={<SuperIcon className={s.menuIcon} />}
+                        link="/app/Super"
+                        index="super"
                     />
                     <LinksGroup
                         onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
