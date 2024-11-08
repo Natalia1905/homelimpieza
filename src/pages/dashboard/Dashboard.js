@@ -97,7 +97,7 @@ class Dashboard extends React.Component {
                 <div className="col-md-9 col-12">
                   <h6 className="name fw-semi-bold">Visitas Locales </h6>
                   <p className="description deemphasize mb-xs text-white">
-                    2 0 2 1 - 2 0 2 4
+                    2 0 2 1 - 2 0 2 5
                   </p>
                   <Progress
                     color="danger"
@@ -118,7 +118,7 @@ class Dashboard extends React.Component {
                 <div className="col-md-9 col-12">
                   <h6 className="name fw-semi-bold">  Visitas Globales</h6>
                   <p className="description deemphasize mb-xs text-white">
-                    2 0 2 1 - 2 0 2 4
+                    2 0 2 1 - 2 0 2 5
                   </p>
                   <Progress
                     color="warning"
