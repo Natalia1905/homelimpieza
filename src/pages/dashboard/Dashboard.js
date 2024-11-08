@@ -165,11 +165,11 @@ class Dashboard extends React.Component {
               <div className="stats-row">
                 <div className="stat-item">
                   <h6 className="name">Crecimiento Total</h6>
-                  <p className="value">60.38%</p>
+                  <p className="value">50.38%</p>
                 </div>
                 <div className="stat-item">
                   <h6 className="name">Mensual</h6>
-                  <p className="value">80.38%</p>
+                  <p className="value">70.38%</p>
                 </div>
                 <div className="stat-item">
                   <h6 className="name">24h</h6>
