@@ -3,10 +3,12 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Table } from 'reactstrap';
 
-const API_URL = 'https://api-iv1i.onrender.com/facturacion';
+const API_FACTURAS_URL = 'https://api-iv1i.onrender.com/facturacion';
+const API_CLIENTES_URL = 'https://apilimpieza.onrender.com/clientes';
 
 const Facturacion = () => {
   const [facturas, setFacturas] = useState([]);
+  const [clientes, setClientes] = useState([]);
   const [editingFactura, setEditingFactura] = useState(null);
   const [formData, setFormData] = useState({
     cliente: '',
@@ -19,15 +21,26 @@ const Facturacion = () => {
 
   useEffect(() => {
     fetchFacturas();
+    fetchClientes(); 
   }, []);
 
   const fetchFacturas = async () => {
     try {
-      const response = await axios.get(API_URL);
+      const response = await axios.get(API_FACTURAS_URL);
       setFacturas(response.data);
     } catch (error) {
       console.error('Error fetching facturas:', error);
       setErrorMessage('Error al cargar las facturas. Inténtalo de nuevo más tarde.');
+    }
+  };
+
+  const fetchClientes = async () => {
+    try {
+      const response = await axios.get(API_CLIENTES_URL);
+      setClientes(response.data);
+    } catch (error) {
+      console.error('Error fetching clientes:', error);
+      setErrorMessage('Error al cargar la lista de clientes. Inténtalo de nuevo más tarde.');
     }
   };
 
@@ -53,34 +66,43 @@ const Facturacion = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  
+    if (name === 'cliente') {
+      // Asignamos el id_cliente temporalmente
+      setFormData({ ...formData, cliente: value });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
   
-    const { cliente, fecha, status, usuario_mod } = formData;
-  
-    if (!cliente || !fecha) {
-      setErrorMessage('Todos los campos son obligatorios.');
-      return;
-    }
-  
-    const dataToSubmit = {
-      cliente,
-      fecha: new Date(fecha).toISOString().slice(0, 19), // Sin milisegundos
-      status,
-      ...(editingFactura && { usuario_mod }),
-    };
+     // Buscar el cliente seleccionado
+  const selectedCliente = clientes.find(
+    (cliente) => `${cliente.id_cliente}` === formData.cliente
+  );
+
+  if (!selectedCliente) {
+    setErrorMessage('Debes seleccionar un cliente válido.');
+    return;
+  }
+
+  const dataToSubmit = {
+    cliente: selectedCliente.id_cliente, // Guardar el id_cliente en la columna cliente
+    fecha: new Date(formData.fecha).toISOString().slice(0, 19), // ISO 8601
+    status: formData.status,
+    ...(editingFactura && { usuario_mod: formData.usuario_mod }),
+  };
   
     try {
       if (editingFactura) {
-        await axios.put(`${API_URL}/${editingFactura.factura_id}`, dataToSubmit);
+        await axios.put(`${API_FACTURAS_URL}/${editingFactura.factura_id}`, dataToSubmit);
         setSuccessMessage('Factura actualizada exitosamente!');
       } else {
-        await axios.post(API_URL, dataToSubmit);
+        await axios.post(API_FACTURAS_URL, dataToSubmit);
         setSuccessMessage('Factura guardada exitosamente!');
       }
       fetchFacturas();
@@ -127,19 +149,23 @@ const Facturacion = () => {
             <tr>
               <td><label htmlFor="cliente">Cliente</label></td>
               <td>
-                <input
+                <select
                   id="cliente"
                   name="cliente"
                   value={formData.cliente}
                   onChange={handleChange}
-                  placeholder="Nombre del cliente"
-                  type="text"
                   className="form-control"
                   required
-                />
+                >
+                  <option value="">Seleccione un cliente</option>
+                  {clientes.map((cliente) => (
+                    <option key={cliente.id_cliente} value={cliente.id_cliente}>
+                      {cliente.nombre} {cliente.apellidos}
+                    </option>
+                  ))}
+                </select>
               </td>
             </tr>
-           
             <tr>
               <td><label htmlFor="fecha">Fecha</label></td>
               <td>
@@ -246,32 +272,41 @@ const Facturacion = () => {
             </tr>
           </thead>
           <tbody>
-            {facturas.map((factura) => (
-              <tr key={factura.factura_id}>
-                <td>{factura.cliente}</td>
-                <td>{new Date(factura.fecha).toLocaleString()}</td>
-                <td className="text-center">
-                  {factura.status === 'A' ? (
-                    <span className="px-2 btn btn-success btn-xs w-100">
-                      Activo
-                    </span>
-                  ) : (
-                    <span className="px-2 btn btn-danger btn-xs w-100">
-                      Inactivo
-                    </span>
-                  )}
-                </td>
-                <td>
-                  <button
-                    className="btn btn-primary btn-xs w-100"
-                    onClick={() => handleEdit(factura)}
-                  >
-                    Editar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+  {facturas.map((factura) => {
+    // Buscar el cliente correspondiente por id_cliente
+    const cliente = clientes.find(
+      (c) => `${c.id_cliente}` === `${factura.cliente}`
+    );
+
+    return (
+      <tr key={factura.factura_id}>
+        {/* Mostrar el nombre completo o un texto de respaldo */}
+        <td>{cliente ? `${cliente.nombre} ${cliente.apellidos}` : 'Cliente no encontrado'}</td>
+        <td>{new Date(factura.fecha).toLocaleString()}</td>
+        <td className="text-center">
+          {factura.status === 'A' ? (
+            <span className="px-2 btn btn-success btn-xs w-100">
+              Activo
+            </span>
+          ) : (
+            <span className="px-2 btn btn-danger btn-xs w-100">
+              Inactivo
+            </span>
+          )}
+        </td>
+        <td>
+          <button
+            className="btn btn-primary btn-xs w-100"
+            onClick={() => handleEdit(factura)}
+          >
+            Editar
+          </button>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
         </Table>
       </Widget>
     </div>

@@ -20,6 +20,7 @@ import ProveedorIcon from '../Icons/SidebarIcons/ProveedorIcon';
 import FacturaIcon from '../Icons/SidebarIcons/FacturaIcon';
 import FacturaDetalleIcon from '../Icons/SidebarIcons/FacturaDetalleIcon';
 import SuperIcon from '../Icons/SidebarIcons/SuperIcon';
+import HistorialCompras from '../Icons/SidebarIcons/HistorialCompras';
 
 class Sidebar extends React.Component {
     static propTypes = {
@@ -207,6 +208,16 @@ class Sidebar extends React.Component {
                                 link="/app/factura_detalle"
                                 index="factura_detalle"
                             />
+                            <LinksGroup
+                                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                                activeItem={this.props.activeItem}
+                                header="Historial Compras"
+                                isHeader
+                                iconName={<HistorialCompras className={s.menuIcon}/> }
+                                link="/app/historial_compras"
+                                index="historial_compras"
+                            />
+
                         </>
                     )}
 

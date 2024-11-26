@@ -87,9 +87,9 @@ class Register extends React.Component {
         return (
             <div className="auth-page">
                 <Container>
-                    <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Login to your Web App</h3>}>
+                    <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">CREAR CORREO</h3>}>
                         <p className="widget-auth-info">
-                            Please fill all fields below.
+                            Por favor, completa los campos 
                         </p>
                         <form onSubmit={this.doRegister}>
                             {
@@ -100,7 +100,7 @@ class Register extends React.Component {
                                 )
                             }
                             <FormGroup className="mt">
-                                <Label for="email">Email</Label>
+                                <Label for="email">Correo</Label>
                                 <InputGroup className="input-group-no-border">
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>
@@ -109,11 +109,11 @@ class Register extends React.Component {
                                     </InputGroupAddon>
                                     <Input id="email" className="input-transparent pl-3" value={this.state.email}
                                            onChange={this.changeEmail} type="email"
-                                           required name="email" placeholder="Email"/>
+                                           required name="email" placeholder="Correo"/>
                                 </InputGroup>
                             </FormGroup>
                             <FormGroup>
-                                <Label for="password">Password</Label>
+                                <Label for="password">Contraseña</Label>
                                 <InputGroup className="input-group-no-border">
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>
@@ -122,11 +122,11 @@ class Register extends React.Component {
                                     </InputGroupAddon>
                                     <Input id="password" className="input-transparent pl-3" value={this.state.password}
                                            onChange={this.changePassword} type="password"
-                                           required name="password" placeholder="Password"/>
+                                           required name="password" placeholder="Contraseña"/>
                                 </InputGroup>
                             </FormGroup>
                             <FormGroup>
-                                <Label for="confirmPassword">Confirm</Label>
+                                <Label for="confirmPassword">Confirmar</Label>
                                 <InputGroup className="input-group-no-border">
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>
@@ -135,79 +135,23 @@ class Register extends React.Component {
                                     </InputGroupAddon>
                                     <Input id="confirmPassword" className="input-transparent pl-3" value={this.state.confirmPassword}
                                            onChange={this.changeConfirmPassword} onBlur={this.checkPassword} type="password"
-                                           required name="confirmPassword" placeholder="Confirm"/>
+                                           required name="confirmPassword" placeholder="Contraseña"/>
                                 </InputGroup>
                             </FormGroup>
                             <div className="bg-widget-transparent auth-widget-footer">
                                 <Button type="submit" color="danger" className="auth-btn"
-                                        size="sm" style={{color: '#fff'}}>{this.props.isFetching ? 'Loading...' : 'Register'}</Button>
+                                        size="sm" style={{color: '#fff'}}>{this.props.isFetching ? 'Loading...' : 'Registrarse'}</Button>
                                 <p className="widget-auth-info mt-4">
-                                    Already have the account? Login now!
+                                    Ya tienes correo? Inicia Sesión!
                                 </p>
-                                <Link className="d-block text-center mb-4" to="login">Enter the account</Link>
-                                <div className="social-buttons">
-                                    <Button color="primary" className="social-button">
-                                        <i className="social-icon social-google"/>
-                                        <p className="social-text">GOOGLE</p>
-                                    </Button>
-                                    <Button color="success" className="social-button">
-                                        <i className="social-icon social-microsoft"
-                                           style={{backgroundImage: `url(${microsoft})`}}/>
-                                        <p className="social-text" style={{color: '#fff'}}>MICROSOFT</p>
-                                    </Button>
-                                </div>
+                                <Link className="d-block text-center mb-4" to="login">INICIA SESIÓN</Link>
+                                
                             </div>
                         </form>
                     </Widget>
-                    {/*<Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Create an account</h3>}>*/}
-                        {/*<p className="widget-auth-info">*/}
-                            {/*Please fill all fields below*/}
-                        {/*</p>*/}
-                        {/*<form className="mt" onSubmit={this.doRegister}>*/}
-                            {/*{*/}
-                                {/*this.props.errorMessage && (*/}
-                                    {/*<Alert className="alert-sm" color="danger">*/}
-                                        {/*{this.props.errorMessage}*/}
-                                    {/*</Alert>*/}
-                                {/*)*/}
-                            {/*}*/}
-                            {/*<div className="form-group">*/}
-                                {/*<input className="form-control no-border" value={this.state.email}*/}
-                                       {/*onChange={this.changeEmail} type="text" required name="email"*/}
-                                       {/*placeholder="Email"/>*/}
-                            {/*</div>*/}
-                            {/*<div className="form-group">*/}
-                                {/*<input className="form-control no-border" value={this.state.password}*/}
-                                       {/*onChange={this.changePassword} type="password" required name="password"*/}
-                                       {/*placeholder="Password"/>*/}
-                            {/*</div>*/}
-                            {/*<div className="form-group">*/}
-                                {/*<input className="form-control no-border" value={this.state.confirmPassword}*/}
-                                       {/*onChange={this.changeConfirmPassword} onBlur={this.checkPassword} type="password" required name="confirmPassword"*/}
-                                       {/*placeholder="Confirm"/>*/}
-                            {/*</div>*/}
-                            {/*<Button type="submit" color="inverse" className="auth-btn mb-3" size="sm">{this.props.isFetching ? 'Loading...' : 'Register'}</Button>*/}
-                            {/*<p className="widget-auth-info">or sign up with</p>*/}
-                            {/*<div className="social-buttons">*/}
-                                {/*<Button onClick={this.googleLogin} color="primary" className="social-button mb-2">*/}
-                                    {/*<i className="social-icon social-google"/>*/}
-                                    {/*<p className="social-text">GOOGLE</p>*/}
-                                {/*</Button>*/}
-                                {/*<Button onClick={this.microsoftLogin} color="success" className="social-button">*/}
-                                    {/*<i className="social-icon social-microsoft"*/}
-                                       {/*style={{backgroundImage: `url(${microsoft})`}}/>*/}
-                                    {/*<p className="social-text">MICROSOFT</p>*/}
-                                {/*</Button>*/}
-                            {/*</div>*/}
-                        {/*</form>*/}
-                        {/*<p className="widget-auth-info">*/}
-                            {/*Already have the account? Login now!*/}
-                        {/*</p>*/}
-                        {/*<Link className="d-block text-center" to="login">Enter the account</Link>*/}
-                    {/*</Widget>*/}
                 </Container>
                 <footer className="auth-footer">
-                {new Date().getFullYear()} &copy; Light Blue Template - React Admin Dashboard Template Made by <a href="https://flatlogic.com" rel="noopener noreferrer" target="_blank">Flatlogic LLC</a>.                    
+                {new Date().getFullYear()} &copy;  <a rel="noopener noreferrer" target="_blank"></a>.                    
                 </footer>
             </div>
         );

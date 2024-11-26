@@ -6,17 +6,18 @@ import { Table } from 'reactstrap';
 const API_URL = 'https://api-iv1i.onrender.com/factura_detalle';
 const PRODUCTO_URL = 'https://api-iv1i.onrender.com/producto';
 const FACTURA_URL = 'https://api-iv1i.onrender.com/facturacion';
+const CLIENTES_URL = 'https://apilimpieza.onrender.com/clientes';  // URL de la API de clientes
 
 const FacturaDetalle = () => {
   const [facturaDetalles, setFacturaDetalles] = useState([]);
   const [productos, setProductos] = useState([]);
   const [facturas, setFacturas] = useState([]);
+  const [clientes, setClientes] = useState([]);  // Estado para clientes
   const [editingFacturaDetalle, setEditingFacturaDetalle] = useState(null);
   const [formData, setFormData] = useState({
     factura_id: '',
     producto_id: '',
     cantidad: '',
-    subtotal: 1, // Set default subtotal to 1
     status: 'A',
     usuario_mod: '',
   });
@@ -27,6 +28,7 @@ const FacturaDetalle = () => {
     fetchFacturaDetalles();
     fetchProductos();
     fetchFacturas();
+    fetchClientes(); // Llamada a la API de clientes
   }, []);
 
   const fetchFacturaDetalles = async () => {
@@ -61,6 +63,16 @@ const FacturaDetalle = () => {
     }
   };
 
+  const fetchClientes = async () => {
+    try {
+      const response = await axios.get(CLIENTES_URL); // Llamada a la API de clientes
+      setClientes(response.data);  // Guardar clientes en el estado
+    } catch (error) {
+      console.error('Error fetching clientes:', error);
+      setErrorMessage('Error al cargar los clientes. Inténtalo de nuevo más tarde.');
+    }
+  };
+
   useEffect(() => {
     if (editingFacturaDetalle) {
       setFormData({
@@ -77,7 +89,6 @@ const FacturaDetalle = () => {
       factura_id: '',
       producto_id: '',
       cantidad: '',
-      subtotal: 1, // Reset subtotal to 1
       status: 'A',
       usuario_mod: '',
     });
@@ -96,9 +107,7 @@ const FacturaDetalle = () => {
         await axios.put(`${API_URL}/${formData.factura_detalle_id}`, formData);
         setSuccessMessage('Detalle de factura actualizado exitosamente!');
       } else {
-        // Add subtotal to formData before submission
-        const newFormData = { ...formData, subtotal: 1 };
-        await axios.post(API_URL, newFormData);
+        await axios.post(API_URL, formData);
         setSuccessMessage('Detalle de factura guardado exitosamente!');
       }
       fetchFacturaDetalles();
@@ -154,11 +163,15 @@ const FacturaDetalle = () => {
                   required
                 >
                   <option value="" disabled>Selecciona una factura</option>
-                  {facturas.map((factura) => (
-                    <option key={factura.factura_id} value={factura.factura_id}>
-                      {factura.cliente} - {factura.factura_id}
-                    </option>
-                  ))}
+                  {facturas.map((factura) => {
+                    const cliente = clientes.find(c => c.cliente_id === factura.cliente_id);
+                    const clienteNombre = cliente ? `${cliente.nombre} ${cliente.apellidos}` : 'Cliente no encontrado';
+                    return (
+                      <option key={factura.factura_id} value={factura.factura_id}>
+                        {clienteNombre} - {factura.factura_id}
+                      </option>
+                    );
+                  })}
                 </select>
               </td>
             </tr>
@@ -186,18 +199,17 @@ const FacturaDetalle = () => {
               <td><label htmlFor="cantidad">Cantidad</label></td>
               <td>
                 <input
+                  type="number"
                   id="cantidad"
                   name="cantidad"
                   value={formData.cantidad}
                   onChange={handleChange}
-                  placeholder="Cantidad"
-                  type="number"
+                  placeholder='Cantidad'
                   className="form-control"
                   required
                 />
               </td>
             </tr>
-            {/* Removed the subtotal input */}
             <tr>
               <td><label htmlFor="status">Estado</label></td>
               <td>
@@ -214,114 +226,69 @@ const FacturaDetalle = () => {
                 </select>
               </td>
             </tr>
-            {editingFacturaDetalle && (
-  <tr>
-    <td><label htmlFor="usuario_mod">Usuario que edita</label></td>
-    <td>
-      <select
-        id="usuario_mod"
-        name="usuario_mod"
-        value={formData.usuario_mod}
-        onChange={handleChange}
-        className="form-control"
-        required
-      >
-        <option value="">Selecciona un usuario</option>
-        <option value="Natalia Martinez">Natalia Martinez</option>
-        <option value="Michael Guzman">Michael Guzman</option>
-        <option value="Fernando Olvera">Fernando Olvera</option>
-      </select>
-    </td>
-  </tr>
-)}
-
           </tbody>
         </Table>
-        <div className="form-action bg-transparent ps-0 row mb-3">
-          <div className="col-md-12">
-            <button type="submit" className="me-4 btn btn-warning">
-              {editingFacturaDetalle ? 'Actualizar' : 'Agregar'}
-            </button>
-            {editingFacturaDetalle && (
-              <button type="button" className="btn btn-default" onClick={() => setEditingFacturaDetalle(null)}>
-                Cancelar
-              </button>
-            )}
-          </div>
+        <div className="form-group">
+          <button type="submit" className="btn btn-primary btn-block">
+            {editingFacturaDetalle ? 'Actualizar' : 'Guardar'}
+          </button>
         </div>
-
-        {successMessage && (
-          <div
-            className="alert alert-success fade show"
-            role="alert"
-            style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000 }}
-          >
-            {successMessage}
-          </div>
-        )}
-        {errorMessage && (
-          <div
-            className="alert alert-danger fade show"
-            role="alert"
-            style={{ position: 'absolute', top: '70px', right: '20px', zIndex: 1000 }}
-          >
-            {errorMessage}
-          </div>
-        )}
       </form>
 
-      <Widget
+      <div className="mt-4">
+        {successMessage && <div className="alert alert-success">{successMessage}</div>}
+        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+
+        <Widget
         title={
           <h5>
-            Detalles de Factura <span className="fw-semi-bold">Limpieza</span>
+            Detalles <span className="fw-semi-bold">Factura</span>
           </h5>
         }
         settings
         close
       >
-       <Table className="table-bordered table-lg mt-lg mb-0" responsive>
-  <thead className="text-uppercase">
-    <tr>
-      <th>Factura</th>
-      <th>Producto</th>
-      <th>Cantidad</th>
-      <th>Subtotal</th>
-      <th>Status</th>
-      <th>Acciones</th>
-    </tr>
-  </thead><tbody>
-  {facturaDetalles.map((detalle) => {
-    // Busca la factura correspondiente para obtener el cliente
-    const producto = productos.find(p => p.producto_id === detalle.producto_id);
-    const factura = facturas.find(f => f.factura_id === detalle.factura_id);
-    const clienteNombre = factura ? factura.cliente : 'Cliente no encontrado'; // Manejo de error
-
-    return (
-      <tr key={detalle.factura_detalle_id}>
-        <td>{detalle.factura_id} - {clienteNombre}</td> {/* Agregado aquí */}
-        <td>{producto ? producto.nombre : 'Producto no encontrado'}</td> {/* Show product name */}
-        <td>{detalle.cantidad}</td>
-        <td>${detalle.subtotal}</td>
-        <td className="text-center">
-          {detalle.status === 'A' ? (
+        <Table className="table-bordered table-lg mt-lg mb-0" responsive>
+          <thead className="text-uppercase">
+            <tr>
+              <th>Factura</th>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {facturaDetalles.map((facturaDetalle) => {
+              const producto = productos.find(p => p.producto_id === facturaDetalle.producto_id);
+              const factura = facturas.find(f => f.factura_id === facturaDetalle.factura_id);
+              return (
+                <tr key={facturaDetalle.factura_detalle_id}>
+                  <td>{factura ? factura.factura_id : 'Factura no encontrada'}</td>
+                  <td>{producto ? producto.nombre : 'Producto no encontrado'}</td>
+                  <td>{facturaDetalle.cantidad}</td>
+                  <td className="text-center">
+          {facturaDetalle.status === 'A' ? (
             <span className="px-2 btn btn-success btn-xs w-100">Activo</span>
           ) : (
             <span className="px-2 btn btn-danger btn-xs w-100">Inactivo</span>
           )}
         </td>
-        <td>
-          <button className="btn btn-primary btn-xs w-100" onClick={() => handleEdit(detalle)}>
-            Editar
-          </button>
-        </td>
-      </tr>
-    );
-  })}
-</tbody>
-
-</Table>
-
-      </Widget>
+                  <td>
+                    <button
+                      className="btn btn-warning"
+                      onClick={() => handleEdit(facturaDetalle)}
+                    >
+                      Editar
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+        </Widget>
+      </div>
     </div>
   );
 };

@@ -19,6 +19,7 @@ import Proveedor from '../../pages/proveedor/proveedor';
 import Factura from '../../pages/factura/factura'; 
 import Factura_detalle from '../../pages/factura_detalle/factura_detalle';
 import Super from '../../pages/Super/Super'; 
+import HistorialCompras from '../../pages/historial_compras/historial_compras';
 
 import Header from '../Header';
 import Sidebar from '../Sidebar';
@@ -96,6 +97,7 @@ class Layout extends React.Component {
                     <Route path="/app/factura" exact component={Factura}/> {/* Añade la ruta  */}
                     <Route path="/app/factura_detalle" exact component={Factura_detalle}/> {/* Añade la ruta  */}
                     <Route path="/app/Super" exact component={Super}/> {/* Añade la ruta  */}
+                    <Route path="/app/historial_compras" exact component={HistorialCompras}/>
                   </Switch>
                 </CSSTransition>
               </TransitionGroup>
